@@ -18,5 +18,54 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
+    background-image: url('/img/FondoLayout.jpg'); /* Asegúrate de que esta es la ruta correcta */
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    height: 100%; /* Asegúrate de que el cuerpo cubre toda la pantalla */
+    margin: 0;
+    padding: 0;
 }
+
+header {
+    background: transparent; /* Hace que el fondo del header sea transparente */
+    position: relative;
+    z-index: 1; /* Asegúrate de que el contenido del header esté encima del fondo */
+}
+
+/* Fondo transparente para la barra de navegación */
+.navbar {
+    background: transparent; /* Elimina cualquier fondo de la barra de navegación */
+}
+
+    /* Estilo para el título LifeBook */
+    .navbar .navbar-brand {
+        font-family: 'Courier New', Courier, monospace; /* Fuente monoespaciada hacker */
+        font-size: 1.5rem; /* Fija el tamaño del título LifeBook */
+        color: #00ff00 !important; /* Color verde neón */
+    }
+
+    /* Estilo para los enlaces de navegación */
+    .navbar .nav-link {
+        font-family: 'Courier New', Courier, monospace; /* Fuente monoespaciada hacker */
+        font-size: 1.2rem; /* Ajusta el tamaño que prefieras */
+        color: #00ff00 !important; /* Verde neón */
+    }
+
+        /* Estilo para el enlace activo (vista actual) */
+        .navbar .nav-link.active {
+            color: #ffffff !important; /* Enlace blanco cuando está seleccionado */
+            font-weight: bold; /* Negrita para resaltar el enlace activo */
+        }
+
+        /* Mantener el color verde en hover */
+        .navbar .nav-link:hover {
+            color: #00ff00 !important; /* Mantener el verde en hover */
+        }
+
+
+
+
+
+
+
