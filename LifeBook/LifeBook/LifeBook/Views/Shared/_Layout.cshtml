@@ -25,10 +25,29 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li> *@
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Sos" asp-action="Index">SO</a>
-                        </li>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a class="nav-link hacker-link" asp-area="" asp-controller="Sos" asp-action="Index">SO</a>
+                        }
                     </ul>
+
+                    <ul class="nav navbar-nav navbar-right">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item d-flex align-items-center">
+                                <a class="nav-link hacker-link" asp-area="" asp-controller="Account" asp-action="ChangeUser">@User.Identity.Name</a>
+                                <span class="text-green mx-2">-</span> <!-- El separador en verde -->
+                                <a class="nav-link hacker-link" asp-area="" asp-controller="Account" asp-action="Logout">Logout</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link hacker-link" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
+                            </li>
+                        }
+                    </ul>
+
                 </div>
             </div>
         </nav>

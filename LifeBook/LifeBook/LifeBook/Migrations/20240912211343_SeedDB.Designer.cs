@@ -4,6 +4,7 @@ using LifeBook.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LifeBook.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240912211343_SeedDB")]
+    partial class SeedDB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,7 +52,7 @@ namespace LifeBook.Migrations
 
                     b.HasIndex("SoId");
 
-                    b.ToTable("Attacks", (string)null);
+                    b.ToTable("Attacks");
                 });
 
             modelBuilder.Entity("LifeBook.Data.Entities.So", b =>
@@ -72,7 +75,7 @@ namespace LifeBook.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Sos", (string)null);
+                    b.ToTable("Sos");
                 });
 
             modelBuilder.Entity("LifeBook.Data.Entities.Tool", b =>
@@ -103,7 +106,7 @@ namespace LifeBook.Migrations
 
                     b.HasIndex("SoId");
 
-                    b.ToTable("Tools", (string)null);
+                    b.ToTable("Tools");
                 });
 
             modelBuilder.Entity("LifeBook.Data.Entities.User", b =>
