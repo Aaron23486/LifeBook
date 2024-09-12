@@ -11,32 +11,30 @@
 <div class="form-container">
     <div class="form-content">
         <form asp-action="Create" method="post">
-            <div asp-validation-summary="ModelOnly" class="validation-error"></div>
+            <input type="hidden" asp-for="SoId" />
 
-            <!-- Campo para Nombre del Ataque -->
+            <!-- Nombre del ataque -->
             <div class="form-group">
                 <label asp-for="Name" class="control-label">Nombre del Ataque</label>
                 <input asp-for="Name" class="form-control hacker-input" placeholder="Introduce el nombre del ataque..." />
                 <span asp-validation-for="Name" class="validation-error"></span>
             </div>
 
-            <!-- Campo para Descripción -->
+            <!-- Descripción -->
             <div class="form-group">
                 <label asp-for="Description" class="control-label">Descripción</label>
-                <textarea asp-for="Description" class="form-control hacker-input" placeholder="Introduce la descripción del ataque..."></textarea>
+                <textarea asp-for="Description" class="form-control hacker-input" placeholder="Introduce la descripción..."></textarea>
                 <span asp-validation-for="Description" class="validation-error"></span>
             </div>
 
-            <!-- Campo para Video URL -->
+            <!-- URL del video -->
             <div class="form-group">
                 <label asp-for="VideoUrl" class="control-label">URL del Video</label>
                 <input asp-for="VideoUrl" class="form-control hacker-input" placeholder="Introduce la URL del video..." />
                 <span asp-validation-for="VideoUrl" class="validation-error"></span>
             </div>
 
-            <!-- Campo oculto para SoId (clave foránea) -->
-            <input type="hidden" asp-for="SoId" />
-
+            <!-- Botón de Crear -->
             <div class="form-group">
                 <input type="submit" value="Crear" class="btn btn-hacker btn-large" />
             </div>
@@ -44,11 +42,11 @@
     </div>
 </div>
 
-
-<!-- Botón de regresar -->
+<!-- Botón para regresar a la lista de ataques -->
 <div class="back-link">
-    <a asp-action="Index" class="btn btn-hacker btn-small">Volver a la Lista</a>
+    <a asp-action="Index" asp-route-soId="@ViewBag.SoId" class="btn btn-hacker btn-small">Volver a la Lista</a>
 </div>
+
 
 <!-- Estilos personalizados para la temática hacker -->
 <style>

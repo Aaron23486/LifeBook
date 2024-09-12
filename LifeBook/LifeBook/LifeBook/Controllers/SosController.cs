@@ -22,8 +22,13 @@ namespace LifeBook.Controllers
         // GET: Sos
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Sos.ToListAsync());
+            var sos = await _context.Sos
+                .Include(s => s.Attacks) // Incluye la propiedad de navegación Attacks
+                .ToListAsync();
+
+            return View(sos);
         }
+
 
         // GET: Sos/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -139,15 +144,32 @@ namespace LifeBook.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var so = await _context.Sos.FindAsync(id);
+            var so = await _context.Sos
+                .Include(s => s.Attacks) // Incluye los ataques relacionados
+                .ThenInclude(a => a.Tools) // Incluye las herramientas relacionadas con los ataques
+                .FirstOrDefaultAsync(s => s.Id == id);
+
             if (so != null)
             {
+                // Eliminar todas las herramientas asociadas a cada ataque del So
+                foreach (var attack in so.Attacks)
+                {
+                    _context.Tools.RemoveRange(attack.Tools);
+                }
+
+                // Eliminar todos los ataques asociados al So
+                _context.Attacks.RemoveRange(so.Attacks);
+
+                // Eliminar el So
                 _context.Sos.Remove(so);
+
+                // Guardar cambios
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
 
         private bool SoExists(int id)
         {

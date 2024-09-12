@@ -12,7 +12,7 @@ namespace LifeBook.Data
 
         public DbSet<So> Sos { get; set; }
 
-        public DbSet<Attack> Atacks { get; set; }
+        public DbSet<Attack> Attacks { get; set; }
 
         public DbSet<Tool> Tools { get; set; }
 

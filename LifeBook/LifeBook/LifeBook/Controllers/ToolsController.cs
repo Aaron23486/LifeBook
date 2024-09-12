@@ -19,12 +19,30 @@ namespace LifeBook.Controllers
             _context = context;
         }
 
-        // GET: Tools
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? attackId)
         {
-            var dataContext = _context.Tools.Include(t => t.Attack).Include(t => t.So);
-            return View(await dataContext.ToListAsync());
+            // Guardar attackId y soId en ViewBag para usarlos en la vista
+            var attack = await _context.Attacks.Include(a => a.So).FirstOrDefaultAsync(a => a.Id == attackId);
+
+            if (attack == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.CurrentAttackId = attackId; // Guardar el ID del ataque
+            ViewBag.SoId = attack.SoId; // Guardar el ID del sistema operativo
+
+            // Filtrar herramientas por el attackId
+            var filteredTools = _context.Tools
+                .Where(t => t.AttackId == attackId)
+                .Include(t => t.Attack)
+                .Include(t => t.So);
+
+            return View(await filteredTools.ToListAsync());
         }
+
+
+
 
         // GET: Tools/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -47,30 +65,54 @@ namespace LifeBook.Controllers
         }
 
         // GET: Tools/Create
-        public IActionResult Create()
+        public IActionResult Create(int attackId)
         {
-            ViewData["AttackId"] = new SelectList(_context.Atacks, "Id", "Id");
-            ViewData["SoId"] = new SelectList(_context.Sos, "Id", "Id");
+            var attack = _context.Attacks.Include(a => a.So).FirstOrDefault(a => a.Id == attackId);
+            if (attack == null)
+            {
+                return NotFound();
+            }
+
+            ViewData["AttackId"] = attackId; // Pasar el attackId a la vista
+            ViewData["SoId"] = attack.SoId; // Pasar el SoId del ataque asociado
+            ViewBag.AttackName = attack.Name; // Pasar el nombre del ataque para mostrarlo en la vista
+            ViewBag.SoName = attack.So.Name;  // Pasar el nombre del SO para mostrarlo en la vista
+
             return View();
         }
 
+
         // POST: Tools/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,SoId,AttackId")] Tool tool)
+        public async Task<IActionResult> Create([Bind("Id,Name,Description")] Tool tool, int attackId)
         {
+            var attack = await _context.Attacks.Include(a => a.So).FirstOrDefaultAsync(a => a.Id == attackId);
+            if (attack == null)
+            {
+                return NotFound();
+            }
+
+            tool.AttackId = attackId;
+            tool.SoId = attack.SoId;
+
             if (ModelState.IsValid)
             {
                 _context.Add(tool);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                // Redirigir a la vista de herramientas del ataque creado
+                return RedirectToAction("Index", new { attackId = attackId });
             }
-            ViewData["AttackId"] = new SelectList(_context.Atacks, "Id", "Id", tool.AttackId);
-            ViewData["SoId"] = new SelectList(_context.Sos, "Id", "Id", tool.SoId);
+
+            ViewData["AttackId"] = attackId;
+            ViewData["SoId"] = attack.SoId;
             return View(tool);
         }
+
+
+
+
+
 
         // GET: Tools/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -80,27 +122,43 @@ namespace LifeBook.Controllers
                 return NotFound();
             }
 
-            var tool = await _context.Tools.FindAsync(id);
+            var tool = await _context.Tools
+                .Include(t => t.Attack)   // Incluimos la relación con Attack
+                .Include(t => t.So)       // Incluimos la relación con So
+                .FirstOrDefaultAsync(t => t.Id == id);
+
             if (tool == null)
             {
                 return NotFound();
             }
-            ViewData["AttackId"] = new SelectList(_context.Atacks, "Id", "Id", tool.AttackId);
-            ViewData["SoId"] = new SelectList(_context.Sos, "Id", "Id", tool.SoId);
+
             return View(tool);
         }
 
-        // POST: Tools/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,SoId,AttackId")] Tool tool)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description")] Tool tool)
         {
             if (id != tool.Id)
             {
                 return NotFound();
             }
+
+            var existingTool = await _context.Tools
+                .AsNoTracking()
+                .Include(t => t.Attack)
+                .Include(t => t.So)
+                .FirstOrDefaultAsync(t => t.Id == id);
+
+            if (existingTool == null)
+            {
+                return NotFound();
+            }
+
+            // Mantener el SoId y AttackId originales
+            tool.SoId = existingTool.SoId;
+            tool.AttackId = existingTool.AttackId;
 
             if (ModelState.IsValid)
             {
@@ -120,12 +178,14 @@ namespace LifeBook.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                // Redirigir a la lista de herramientas del ataque
+                return RedirectToAction(nameof(Index), new { attackId = tool.AttackId });
             }
-            ViewData["AttackId"] = new SelectList(_context.Atacks, "Id", "Id", tool.AttackId);
-            ViewData["SoId"] = new SelectList(_context.Sos, "Id", "Id", tool.SoId);
+
             return View(tool);
         }
+
+
 
         // GET: Tools/Delete/5
         public async Task<IActionResult> Delete(int? id)
@@ -147,7 +207,6 @@ namespace LifeBook.Controllers
             return View(tool);
         }
 
-        // POST: Tools/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -156,11 +215,13 @@ namespace LifeBook.Controllers
             if (tool != null)
             {
                 _context.Tools.Remove(tool);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            // Redirigir a la lista de herramientas del ataque
+            return RedirectToAction(nameof(Index), new { attackId = tool.AttackId });
         }
+
 
         private bool ToolExists(int id)
         {

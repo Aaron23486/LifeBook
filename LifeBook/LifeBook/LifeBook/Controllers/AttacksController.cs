@@ -23,21 +23,21 @@ namespace LifeBook.Controllers
         {
             ViewBag.SoId = soId; // Pasar SoId a la vista
 
-            if (soId == null)
-            {
-                // Si no se pasa SoId, mostrar todos los ataques
-                var dataContext = _context.Atacks.Include(a => a.So);
-                return View(await dataContext.ToListAsync());
-            }
-            else
+            IQueryable<Attack> query = _context.Attacks
+                .Include(a => a.So)       // Incluye el sistema operativo
+                .Include(a => a.Tools);   // Incluye las herramientas relacionadas
+
+            if (soId != null)
             {
                 // Filtrar ataques por el SoId
-                var filteredAttacks = _context.Atacks
-                    .Where(a => a.SoId == soId)
-                    .Include(a => a.So);
-                return View(await filteredAttacks.ToListAsync());
+                query = query.Where(a => a.SoId == soId);
             }
+
+            var attacks = await query.ToListAsync();
+
+            return View(attacks);
         }
+
 
 
 
@@ -49,7 +49,7 @@ namespace LifeBook.Controllers
                 return NotFound();
             }
 
-            var attack = await _context.Atacks
+            var attack = await _context.Attacks
                 .Include(a => a.So)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (attack == null)
@@ -72,7 +72,6 @@ namespace LifeBook.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Description,VideoUrl")] Attack attack, int soId)
         {
-            // Asigna el SoId al ataque
             attack.SoId = soId;
 
             if (ModelState.IsValid)
@@ -81,11 +80,10 @@ namespace LifeBook.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index), new { soId = soId });
             }
+
             ViewData["SoId"] = soId;
             return View(attack);
         }
-
-
 
 
 
@@ -98,26 +96,32 @@ namespace LifeBook.Controllers
                 return NotFound();
             }
 
-            var attack = await _context.Atacks.FindAsync(id);
+            var attack = await _context.Attacks.Include(a => a.So).FirstOrDefaultAsync(a => a.Id == id);
             if (attack == null)
             {
                 return NotFound();
             }
-            ViewData["SoId"] = new SelectList(_context.Sos, "Id", "Id", attack.SoId);
-            return View(attack);
+
+            return View(attack); // Se pasa el SoId como parte del objeto attack
         }
 
         // POST: Attacks/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,VideoUrl,SoId")] Attack attack)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,VideoUrl")] Attack attack)
         {
             if (id != attack.Id)
             {
                 return NotFound();
             }
+
+            var existingAttack = await _context.Attacks.AsNoTracking().FirstOrDefaultAsync(a => a.Id == id);
+            if (existingAttack == null)
+            {
+                return NotFound();
+            }
+
+            attack.SoId = existingAttack.SoId;
 
             if (ModelState.IsValid)
             {
@@ -137,11 +141,18 @@ namespace LifeBook.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index), new { soId = attack.SoId });
             }
-            ViewData["SoId"] = new SelectList(_context.Sos, "Id", "Id", attack.SoId);
+
             return View(attack);
         }
+
+        // Verificar si el ataque existe
+        private bool AttackExists(int id)
+        {
+            return _context.Attacks.Any(e => e.Id == id);
+        }
+
 
         // GET: Attacks/Delete/5
         public async Task<IActionResult> Delete(int? id)
@@ -151,7 +162,7 @@ namespace LifeBook.Controllers
                 return NotFound();
             }
 
-            var attack = await _context.Atacks
+            var attack = await _context.Attacks
                 .Include(a => a.So)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (attack == null)
@@ -163,23 +174,19 @@ namespace LifeBook.Controllers
         }
 
         // POST: Attacks/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var attack = await _context.Atacks.FindAsync(id);
-            if (attack != null)
-            {
-                _context.Atacks.Remove(attack);
-            }
+[HttpPost, ActionName("Delete")]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> DeleteConfirmed(int id)
+{
+    var attack = await _context.Attacks.FindAsync(id);
+    if (attack != null)
+    {
+        _context.Attacks.Remove(attack);
+        await _context.SaveChangesAsync();
+    }
+    
+    return RedirectToAction(nameof(Index), new { soId = attack.SoId });
+}
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool AttackExists(int id)
-        {
-            return _context.Atacks.Any(e => e.Id == id);
-        }
     }
 }

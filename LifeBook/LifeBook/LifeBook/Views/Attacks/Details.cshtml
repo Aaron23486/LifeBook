@@ -1,42 +1,144 @@
 ﻿@model LifeBook.Data.Entities.Attack
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalles del Ataque";
 }
 
-<h1>Details</h1>
+<!-- Título principal con un estilo elegante -->
+<h1 class="hacker-title">Detalles del Ataque</h1>
 
-<div>
-    <h4>Attack</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.VideoUrl)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.VideoUrl)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.So)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.So.Id)
-        </dd>
-    </dl>
+<!-- Detalles del ataque, alineados de manera más clara -->
+<div class="form-container">
+    <div class="form-content">
+        <table class="table-details">
+            <tr>
+                <th>Nombre:</th>
+                <td>@Html.DisplayFor(model => model.Name)</td>
+            </tr>
+            <tr>
+                <th>Descripción:</th>
+                <td>@Html.DisplayFor(model => model.Description)</td>
+            </tr>
+            <tr>
+                <th>URL del Video:</th>
+                <td>
+                    <a href="@Model.VideoUrl" target="_blank" class="action-link">
+                        @Model.VideoUrl
+                    </a>
+                </td>
+
+            </tr>
+            <tr>
+                <th>Sistema Operativo:</th>
+                <td>@Model.So.Name</td> <!-- Mostramos el nombre del SO -->
+            </tr>
+        </table>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+<!-- Botones para acciones -->
+<div class="back-link">
+    <a asp-action="Edit" asp-route-id="@Model.Id" asp-route-soId="@Model.SoId" class="btn btn-hacker btn-small">Editar</a>
+    <a asp-action="Index" asp-route-soId="@Model.SoId" class="btn btn-hacker btn-small">Volver a la Lista</a>
 </div>
+
+
+<!-- Estilos personalizados para la temática hacker -->
+<style>
+    body {
+        background-color: #0a0a0a;
+        color: #00ff00;
+        font-family: 'Courier New', Courier, monospace;
+    }
+
+    .hacker-title {
+        font-size: 2.5em;
+        color: #00ff00;
+        text-align: center;
+        margin-bottom: 20px;
+        text-shadow: 0px 0px 10px #00ff00;
+    }
+
+    .form-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 60vh;
+    }
+
+    .form-content {
+        background-color: #111111;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        width: 100%;
+        max-width: 600px;
+    }
+
+    .table-details {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .table-details th, .table-details td {
+            padding: 10px;
+            text-align: left;
+            color: #00ff00;
+            font-size: 1.2em;
+            border-bottom: 1px solid #00ff00;
+        }
+
+        .table-details th {
+            width: 30%;
+            font-weight: bold;
+        }
+
+        .table-details td {
+            width: 70%;
+        }
+
+        /* Estilo para los enlaces (links) dentro de la tabla */
+        .table-details a {
+            color: #00ff00;
+            text-decoration: none;
+        }
+
+            .table-details a:hover {
+                text-decoration: underline;
+                color: #00ff00;
+            }
+
+    .btn-hacker {
+        background-color: #111111;
+        color: #00ff00;
+        border: 1px solid #00ff00;
+        text-transform: uppercase;
+        text-decoration: none;
+        cursor: pointer;
+        font-family: 'Courier New', Courier, monospace;
+        display: inline-block;
+        padding: 10px 20px;
+    }
+
+    .btn-small {
+        padding: 10px 20px;
+        font-size: 1em;
+        margin: 10px 5px;
+    }
+
+    .btn-hacker:hover {
+        background-color: #00ff00;
+        color: #111111;
+    }
+
+    .back-link {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .validation-error {
+        color: #dc3545;
+        font-size: 0.9em;
+        margin-bottom: 10px;
+    }
+</style>

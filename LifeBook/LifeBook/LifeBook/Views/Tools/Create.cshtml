@@ -1,46 +1,151 @@
 ﻿@model LifeBook.Data.Entities.Tool
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Crear Herramienta";
 }
 
-<h1>Create</h1>
+<!-- Encabezado principal con un estilo elegante -->
+<h1 class="hacker-title">Crear Nueva Herramienta</h1>
 
-<h4>Tool</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<!-- Formulario para crear una nueva herramienta -->
+<div class="form-container">
+    <div class="form-content">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="validation-error"></div>
+
+            <!-- Campo para Nombre de la Herramienta -->
             <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+                <label asp-for="Name" class="control-label">Nombre de la Herramienta</label>
+                <input asp-for="Name" class="form-control hacker-input" placeholder="Introduce el nombre de la herramienta..." />
+                <span asp-validation-for="Name" class="validation-error"></span>
             </div>
+
+            <!-- Campo para Descripción -->
             <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
+                <label asp-for="Description" class="control-label">Descripción</label>
+                <textarea asp-for="Description" class="form-control hacker-input" placeholder="Introduce la descripción de la herramienta..."></textarea>
+                <span asp-validation-for="Description" class="validation-error"></span>
             </div>
+
+            <!-- Campo oculto para SoId (clave foránea) -->
+            <input type="hidden" asp-for="SoId" value="@ViewData["SoId"]" />
+
+            <!-- Campo oculto para AttackId (clave foránea) -->
+            <input type="hidden" asp-for="AttackId" value="@ViewData["AttackId"]" />
+
+            <!-- Botón para crear -->
             <div class="form-group">
-                <label asp-for="SoId" class="control-label"></label>
-                <select asp-for="SoId" class ="form-control" asp-items="ViewBag.SoId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="AttackId" class="control-label"></label>
-                <select asp-for="AttackId" class ="form-control" asp-items="ViewBag.AttackId"></select>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Crear" class="btn btn-hacker btn-large" />
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+<!-- Botón para volver a la lista -->
+<div class="back-link">
+    <a asp-action="Index" asp-route-attackId="@ViewData["AttackId"]" class="btn btn-hacker btn-small">Volver a la Lista</a>
 </div>
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+
+<!-- Estilos personalizados para la temática hacker -->
+<style>
+    body {
+        background-color: #0a0a0a;
+        color: #00ff00;
+        font-family: 'Courier New', Courier, monospace;
+    }
+
+    .hacker-title {
+        font-size: 2.5em;
+        color: #00ff00;
+        text-align: center;
+        margin-bottom: 20px;
+        text-shadow: 0px 0px 10px #00ff00;
+    }
+
+    .form-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 60vh;
+    }
+
+    .form-content {
+        background-color: #111111;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .control-label {
+        display: block;
+        font-weight: bold;
+        color: #00ff00;
+        margin-bottom: 8px;
+    }
+
+    .hacker-input {
+        width: 100%;
+        padding: 10px;
+        font-size: 1em;
+        border: 1px solid #00ff00;
+        border-radius: 4px;
+        background-color: #1c1c1c;
+        color: #00ff00;
+    }
+
+        .hacker-input:focus {
+            border-color: #00ff00;
+            background-color: #000000;
+            color: #00ff00;
+            outline: none;
+        }
+
+    .btn-hacker {
+        background-color: #111111;
+        color: #00ff00;
+        border: 1px solid #00ff00;
+        text-transform: uppercase;
+        text-decoration: none;
+        cursor: pointer;
+        font-family: 'Courier New', Courier, monospace;
+        display: inline-block;
+    }
+
+    /* Botón grande para "Crear" */
+    .btn-large {
+        padding: 10px 20px;
+        width: 100%;
+        font-size: 1em;
+    }
+
+    /* Botón pequeño para "Volver a la Lista" */
+    .btn-small {
+        padding: 10px 20px;
+        font-size: 1em;
+        width: auto;
+        margin: 0 auto;
+    }
+
+    .btn-hacker:hover {
+        background-color: #00ff00;
+        color: #111111;
+    }
+
+    .back-link {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .validation-error {
+        color: #dc3545;
+        font-size: 0.9em;
+        margin-bottom: 10px;
+    }
+</style>

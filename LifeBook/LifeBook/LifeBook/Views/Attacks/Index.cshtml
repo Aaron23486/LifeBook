@@ -4,20 +4,20 @@
     ViewData["Title"] = "Resumen de Ataques";
 }
 
-<!-- Encabezado principal con un estilo elegante -->
 <h1 class="hacker-title">Resumen de Ataques</h1>
 
-<!-- Botón para crear un nuevo ataque, pasando el SoId -->
 <p>
     <a asp-action="Create" asp-route-soId="@ViewBag.SoId" class="btn btn-hacker">Crear Nuevo</a>
+
+    <a asp-controller="Sos" asp-action="Index" class="btn btn-hacker btn-small">Regresar</a>
 </p>
 
 
-<!-- Tabla con estilo hacker -->
 <table class="table table-hacker">
     <thead>
         <tr>
             <th>Nombre del Ataque</th>
+            <th>Herramientas</th> <!-- Nueva columna para herramientas -->
             <th>Descripción</th>
             <th>Video URL</th>
             <th>Acciones</th>
@@ -31,10 +31,18 @@
                     @Html.DisplayFor(modelItem => item.Name)
                 </td>
                 <td>
+                    <!-- Muestra el número de herramientas como un enlace, incluso si es 0 -->
+                    <a asp-controller="Tools" asp-action="Index" asp-route-attackId="@item.Id" class="action-link">
+                        @(item.Tools != null ? item.Tools.Count : 0)
+                    </a>
+                </td>
+                <td>
                     @Html.DisplayFor(modelItem => item.Description)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.VideoUrl)
+                    <a href="@item.VideoUrl" target="_blank" class="action-link">
+                        @item.VideoUrl
+                    </a>
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-action">Editar</a>
@@ -45,6 +53,9 @@
         }
     </tbody>
 </table>
+
+
+
 
 <!-- Estilos personalizados para la temática hacker -->
 <style>
