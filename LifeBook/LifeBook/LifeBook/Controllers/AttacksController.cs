@@ -174,19 +174,31 @@ namespace LifeBook.Controllers
         }
 
         // POST: Attacks/Delete/5
-[HttpPost, ActionName("Delete")]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> DeleteConfirmed(int id)
-{
-    var attack = await _context.Attacks.FindAsync(id);
-    if (attack != null)
-    {
-        _context.Attacks.Remove(attack);
-        await _context.SaveChangesAsync();
-    }
-    
-    return RedirectToAction(nameof(Index), new { soId = attack.SoId });
-}
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            // Obtiene el ataque con sus herramientas asociadas
+            var attack = await _context.Attacks
+                .Include(a => a.Tools) // Incluye las herramientas asociadas al ataque
+                .Include(a => a.So)    // Incluye el So para poder redirigir después
+                .FirstOrDefaultAsync(a => a.Id == id);
+
+            if (attack != null)
+            {
+                // Eliminar todas las herramientas asociadas al ataque
+                _context.Tools.RemoveRange(attack.Tools);
+
+                // Eliminar el ataque
+                _context.Attacks.Remove(attack);
+
+                // Guardar los cambios
+                await _context.SaveChangesAsync();
+            }
+
+            // Redirigir a la lista de ataques del SoId relacionado
+            return RedirectToAction(nameof(Index), new { soId = attack?.SoId });
+        }
 
     }
 }
