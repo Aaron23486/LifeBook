@@ -1,0 +1,143 @@
+﻿@model LifeBook.Data.Entities.So
+
+@{
+    ViewData["Title"] = "Eliminar";
+}
+
+<!-- Título principal con un estilo elegante -->
+<h1 class="hacker-title">Eliminar Sistema</h1>
+
+<!-- Confirmación de eliminación -->
+<h3 class="hacker-subtitle">¿Estás seguro de que deseas eliminar este sistema?</h3>
+
+<div class="form-container">
+    <div class="form-content">
+        <table class="table-details">
+            <tr>
+                <th>SO:</th>
+                <td>@Html.DisplayFor(model => model.Name)</td>
+            </tr>
+            <tr>
+                <th>Descripción:</th>
+                <td>@Html.DisplayFor(model => model.Description)</td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<!-- Formulario de confirmación -->
+<div class="back-link">
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Eliminar" class="btn btn-hacker btn-danger" />
+        <a asp-action="Index" class="btn btn-hacker btn-small">Volver a la Lista</a>
+    </form>
+</div>
+
+<!-- Estilos personalizados para la temática hacker -->
+<style>
+    body {
+        background-color: #0a0a0a;
+        color: #00ff00;
+        font-family: 'Courier New', Courier, monospace;
+    }
+
+    .hacker-title {
+        font-size: 2.5em;
+        color: #00ff00;
+        text-align: center;
+        margin-bottom: 20px;
+        text-shadow: 0px 0px 10px #00ff00;
+    }
+
+    .hacker-subtitle {
+        font-size: 1.5em;
+        color: #ff0000;
+        text-align: center;
+        margin-bottom: 20px;
+        text-shadow: 0px 0px 10px #ff0000;
+    }
+
+    .form-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 40vh;
+    }
+
+    .form-content {
+        background-color: #111111;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        width: 100%;
+        max-width: 600px;
+    }
+
+    .table-details {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .table-details th, .table-details td {
+            padding: 10px;
+            text-align: left;
+            color: #00ff00;
+            font-size: 1.2em;
+            border-bottom: 1px solid #00ff00;
+        }
+
+        .table-details th {
+            width: 30%;
+            font-weight: bold;
+        }
+
+        .table-details td {
+            width: 70%;
+        }
+
+    .btn-hacker {
+        background-color: #111111;
+        color: #00ff00;
+        border: 1px solid #00ff00;
+        text-transform: uppercase;
+        text-decoration: none;
+        cursor: pointer;
+        font-family: 'Courier New', Courier, monospace;
+        display: inline-block;
+        padding: 10px 20px;
+    }
+
+    .btn-danger {
+        background-color: #ff0000;
+        color: #ffffff;
+        border: 1px solid #ff0000;
+    }
+
+    .btn-small {
+        padding: 10px 20px;
+        font-size: 1em;
+        margin: 10px 5px;
+    }
+
+    .btn-hacker:hover {
+        background-color: #00ff00;
+        color: #111111;
+    }
+
+    .btn-danger:hover {
+        background-color: #ff4d4d;
+        border-color: #ff4d4d;
+    }
+
+    .back-link {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .validation-error {
+        color: #dc3545;
+        font-size: 0.9em;
+        margin-bottom: 10px;
+    }
+</style>

@@ -1,0 +1,121 @@
+﻿@model IEnumerable<LifeBook.Data.Entities.Attack>
+
+@{
+    ViewData["Title"] = "Resumen de Ataques";
+}
+
+<!-- Encabezado principal con un estilo elegante -->
+<h1 class="hacker-title">Resumen de Ataques</h1>
+
+<!-- Botón para crear un nuevo ataque, pasando el SoId -->
+<p>
+    <a asp-action="Create" asp-route-soId="@ViewBag.SoId" class="btn btn-hacker">Crear Nuevo</a>
+</p>
+
+
+<!-- Tabla con estilo hacker -->
+<table class="table table-hacker">
+    <thead>
+        <tr>
+            <th>Nombre del Ataque</th>
+            <th>Descripción</th>
+            <th>Video URL</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.VideoUrl)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-action">Editar</a>
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-action">Detalles</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-action">Eliminar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Estilos personalizados para la temática hacker -->
+<style>
+    body {
+        background-color: #0a0a0a;
+        color: #00ff00;
+        font-family: 'Courier New', Courier, monospace;
+    }
+
+    .hacker-title {
+        font-size: 2.5em;
+        color: #00ff00;
+        text-align: center;
+        margin-bottom: 20px;
+        text-shadow: 0px 0px 10px #00ff00;
+    }
+
+    .btn-hacker {
+        background-color: #111111;
+        color: #00ff00;
+        border: 1px solid #00ff00;
+        padding: 10px 20px;
+        text-transform: uppercase;
+        text-decoration: none;
+    }
+
+        .btn-hacker:hover {
+            background-color: #00ff00;
+            color: #111111;
+        }
+
+    /* Estilo para los botones de acción (editar, detalles, eliminar) */
+    .btn-action {
+        background-color: #111111;
+        color: #00ff00;
+        border: 1px solid #00ff00;
+        padding: 5px 10px;
+        text-decoration: none;
+        display: inline-block;
+        margin-right: 5px;
+    }
+
+        .btn-action:hover {
+            background-color: #00ff00;
+            color: #111111;
+        }
+
+    .table-hacker {
+        width: 100%;
+        background-color: #111111;
+        color: #00ff00;
+        border: 1px solid #00ff00;
+        margin-top: 20px;
+    }
+
+        .table-hacker th, .table-hacker td {
+            padding: 15px;
+            text-align: left;
+        }
+
+        .table-hacker thead {
+            background-color: #1c1c1c;
+        }
+
+    .action-link {
+        color: #00ff00;
+        text-decoration: none;
+    }
+
+        .action-link:hover {
+            text-decoration: underline;
+            color: #00ff00;
+        }
+</style>
