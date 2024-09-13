@@ -6,27 +6,42 @@
 
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
-
 <h1 class="hacker-title">Resumen de Ataques</h1>
 
 <p>
     <a asp-action="Create" asp-route-soId="@ViewBag.SoId" class="btn btn-hacker">Crear Nuevo</a>
-
     <a asp-controller="Sos" asp-action="Index" class="btn btn-hacker btn-small">Regresar</a>
 </p>
 
+<!-- Filtro de búsqueda y selección de número de registros por página -->
+<div class="mb-3 d-flex align-items-center justify-content-between">
+    <!-- Filtro de búsqueda -->
+    <div class="me-2">
+        <input type="text" id="searchInput" class="form-control form-control-sm hacker-input" placeholder="Filtro">
+    </div>
+
+    <!-- Selección de número de registros por página -->
+    <div>
+        <select id="pageSize" class="form-control form-control-sm hacker-select">
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+        </select>
+    </div>
+</div>
 
 <table class="table table-hacker">
     <thead>
         <tr>
             <th>Nombre del Ataque</th>
-            <th>Herramientas</th> <!-- Nueva columna para herramientas -->
+            <th>Herramientas</th>
             <th>Descripción</th>
             <th>Video URL</th>
             <th>Acciones</th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="attackTableBody">
         @foreach (var item in Model)
         {
             <tr>
@@ -34,18 +49,15 @@
                     @Html.DisplayFor(modelItem => item.Name)
                 </td>
                 <td>
-                    <!-- Muestra el número de herramientas como un enlace, incluso si es 0 -->
                     <a asp-controller="Tools" asp-action="Index" asp-route-attackId="@item.Id" class="action-link">
                         @(item.Tools != null ? item.Tools.Count : 0)
                     </a>
                 </td>
                 <td>
-                    <!-- Enlace que abrirá el modal -->
                     <a href="#" class="action-link" data-bs-toggle="modal" data-bs-target="#descriptionModal-@item.Id">
                         Ver Resumen
                     </a>
 
-                    <!-- Modal para mostrar la descripción -->
                     <div class="modal fade" id="descriptionModal-@item.Id" tabindex="-1" aria-labelledby="descriptionModalLabel-@item.Id" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content hacker-modal">
@@ -78,10 +90,76 @@
     </tbody>
 </table>
 
+<!-- Contenedor de la paginación debajo de la tabla -->
+<div class="pagination-container"></div>
 
+<!-- Script para filtrar los ataques por nombre -->
+<script>
+    document.getElementById('searchInput').addEventListener('input', function () {
+        var searchValue = this.value.toLowerCase();
+        var tableRows = document.querySelectorAll('#attackTableBody tr');
 
+        tableRows.forEach(function (row) {
+            var nameCell = row.querySelector('td').textContent.toLowerCase();
+            if (nameCell.includes(searchValue)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
 
-<!-- Estilos personalizados para la temática hacker -->
+    document.getElementById('pageSize').addEventListener('change', function () {
+        var pageSize = parseInt(this.value);
+        paginate(pageSize);
+    });
+
+    function paginate(pageSize) {
+        var rows = document.querySelectorAll('#attackTableBody tr');
+        var totalRows = rows.length;
+        var totalPages = Math.ceil(totalRows / pageSize);
+
+        // Eliminar los controles de paginación anteriores
+        document.querySelectorAll('.pagination').forEach(function (element) {
+            element.remove();
+        });
+
+        if (totalPages <= 1) return; // No se necesita paginación si hay solo una página
+
+        var pagination = document.createElement('div');
+        pagination.className = 'pagination d-flex justify-content-center';
+
+        for (var i = 1; i <= totalPages; i++) {
+            var pageLink = document.createElement('a');
+            pageLink.className = 'page-link hacker-link';
+            pageLink.href = '#';
+            pageLink.textContent = i;
+            pageLink.addEventListener('click', function (e) {
+                e.preventDefault();
+                var page = parseInt(e.target.textContent);
+                var start = (page - 1) * pageSize;
+                var end = start + pageSize;
+
+                rows.forEach(function (row, index) {
+                    if (index >= start && index < end) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+
+            pagination.appendChild(pageLink);
+        }
+
+        document.querySelector('.pagination-container').appendChild(pagination);
+        document.querySelector('a.page-link').click(); // Activar clic en la primera página
+    }
+
+    // Configuración inicial de paginación
+    paginate(parseInt(document.getElementById('pageSize').value));
+</script>
+
 <style>
     body {
         background-color: #0a0a0a;
@@ -114,7 +192,6 @@
             color: #111111;
         }
 
-    /* Estilo para los botones de acción (editar, detalles, eliminar) */
     .btn-action {
         background-color: #111111;
         color: #00ff00;
@@ -132,20 +209,20 @@
 
     .table-hacker {
         width: 100%;
-        background-color: rgba(17, 17, 17, 0.7); /* Fondo negro con transparencia */
+        background-color: rgba(17, 17, 17, 0.7);
         color: #00ff00;
         border: 1px solid #00ff00;
         margin-top: 20px;
     }
 
         .table-hacker th, .table-hacker td {
-            background-color: rgba(17, 17, 17, 0.6); /* Transparencia en las celdas */
+            background-color: rgba(17, 17, 17, 0.6);
             padding: 15px;
             text-align: left;
         }
 
         .table-hacker thead {
-            background-color: rgba(28, 28, 28, 0.8); /* Transparencia en el encabezado */
+            background-color: rgba(28, 28, 28, 0.8);
         }
 
     .action-link {
@@ -158,12 +235,11 @@
             color: #00ff00;
         }
 
-    /* Estilos del modal hacker */
     .hacker-modal {
-        background-color: #111111; /* Fondo negro */
-        color: #00ff00; /* Texto verde */
+        background-color: #111111;
+        color: #00ff00;
         border: 1px solid #00ff00;
-        font-family: 'Courier New', Courier, monospace; /* Fuente monoespaciada estilo hacker */
+        font-family: 'Courier New', Courier, monospace;
     }
 
         .hacker-modal .modal-header,
@@ -180,11 +256,11 @@
         }
 
         .hacker-modal .btn-close {
-            filter: invert(100%); /* Cambia el color del botón de cerrar a verde */
+            filter: invert(100%);
         }
 
         .hacker-modal .hacker-body {
-            font-size: 1.1rem; /* Ajusta el tamaño del texto */
+            font-size: 1.1rem;
             line-height: 1.6;
         }
 
@@ -193,4 +269,61 @@
         align-items: center;
         justify-content: center;
     }
+
+    .form-control-sm {
+        max-width: 200px;
+    }
+
+    .hacker-input, .hacker-select {
+        background-color: #111111;
+        color: #00ff00;
+        border: 1px solid #00ff00;
+    }
+
+        .hacker-input::placeholder, .hacker-select option {
+            color: #00ff00;
+        }
+
+        .hacker-input:focus, .hacker-select:focus {
+            border-color: #00ff00;
+            box-shadow: 0 0 0 0.2rem rgba(0, 255, 0, 0.25);
+        }
+
+    .pagination {
+        margin-top: 20px;
+    }
+
+    .page-link {
+        color: #00ff00;
+        text-decoration: none;
+        padding: 5px 10px;
+        border: 1px solid #00ff00;
+        margin: 0 2px;
+        background-color: #111111; /* Fondo negro de los números de página */
+    }
+
+        .page-link:hover {
+            background-color: #00ff00;
+            color: #111111;
+        }
+
+    .hacker-select {
+        background-color: #111111 !important; /* Asegúrate de aplicar el fondo */
+        color: #00ff00 !important; /* Asegúrate de aplicar el color del texto */
+        border: 1px solid #00ff00;
+        -webkit-appearance: none; /* Remueve el estilo predeterminado del navegador */
+        -moz-appearance: none; /* Para Firefox */
+        appearance: none; /* Para estandar */
+    }
+
+        .hacker-select option {
+            background-color: #111111 !important; /* Fondo para las opciones */
+            color: #00ff00 !important; /* Color del texto de las opciones */
+        }
+
+        .hacker-select:focus {
+            border-color: #00ff00;
+            box-shadow: 0 0 0 0.2rem rgba(0, 255, 0, 0.25);
+        }
+
 </style>
