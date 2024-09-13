@@ -19,11 +19,15 @@
             </tr>
             <tr>
                 <th>Descripción:</th>
-                <td>@Html.DisplayFor(model => model.Description)</td>
+                <td>
+                    <a href="#" class="action-link" data-bs-toggle="modal" data-bs-target="#descriptionModal">
+                        Ver Resumen
+                    </a>
+                </td>
             </tr>
             <tr>
                 <th>URL del Video:</th>
-                <td><a href="@Model.VideoUrl" target="_blank" class="action-link">@Model.VideoUrl</a></td>
+                <td><a href="@Model.VideoUrl" target="_blank" class="action-link">Ver Video</a></td>
             </tr>
             <tr>
                 <th>Sistema Operativo:</th>
@@ -33,15 +37,32 @@
     </div>
 </div>
 
+<!-- Modal para mostrar la descripción -->
+<div class="modal fade" id="descriptionModal" tabindex="-1" aria-labelledby="descriptionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content hacker-modal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="descriptionModalLabel">Descripción del Ataque</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body hacker-body">
+                @Model.Description
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-hacker" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Formulario de confirmación -->
-<div class="back-link">
+<div class="back-link" style="text-align: center;">
     <form asp-action="Delete" method="post">
         <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Eliminar" class="btn btn-hacker btn-danger" />
+        <input type="submit" value="Eliminar" class="btn btn-hacker btn-danger btn-small" />
         <a asp-action="Index" asp-route-soId="@Model.SoId" class="btn btn-hacker btn-small">Volver a la Lista</a>
     </form>
 </div>
-
 
 <!-- Estilos personalizados para la temática hacker -->
 <style>
@@ -151,5 +172,37 @@
 
         .action-link:hover {
             text-decoration: underline;
+        }
+</style>
+
+<!-- Estilos para el modal -->
+<style>
+    .hacker-modal {
+        background-color: #111111;
+        color: #00ff00;
+        border: 1px solid #00ff00;
+        font-family: 'Courier New', Courier, monospace;
+    }
+
+        .hacker-modal .modal-header,
+        .hacker-modal .modal-body,
+        .hacker-modal .modal-footer {
+            background-color: #111111;
+            color: #00ff00;
+        }
+
+        .hacker-modal .modal-title {
+            color: #00ff00;
+            text-shadow: 0px 0px 10px #00ff00;
+            font-size: 1.5rem;
+        }
+
+        .hacker-modal .btn-close {
+            filter: invert(100%);
+        }
+
+        .hacker-modal .hacker-body {
+            font-size: 1.3rem;
+            line-height: 1.6;
         }
 </style>

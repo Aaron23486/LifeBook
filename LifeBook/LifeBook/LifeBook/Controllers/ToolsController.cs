@@ -85,7 +85,7 @@ namespace LifeBook.Controllers
         // POST: Tools/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description")] Tool tool, int attackId)
+        public async Task<IActionResult> Create([Bind("Id,Name,Description,URL")] Tool tool, int attackId)
         {
             var attack = await _context.Attacks.Include(a => a.So).FirstOrDefaultAsync(a => a.Id == attackId);
             if (attack == null)
@@ -100,7 +100,6 @@ namespace LifeBook.Controllers
             {
                 _context.Add(tool);
                 await _context.SaveChangesAsync();
-                // Redirigir a la vista de herramientas del ataque creado
                 return RedirectToAction("Index", new { attackId = attackId });
             }
 
@@ -136,9 +135,10 @@ namespace LifeBook.Controllers
         }
 
 
+        // POST: Tools/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description")] Tool tool)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,URL")] Tool tool)
         {
             if (id != tool.Id)
             {
@@ -156,7 +156,6 @@ namespace LifeBook.Controllers
                 return NotFound();
             }
 
-            // Mantener el SoId y AttackId originales
             tool.SoId = existingTool.SoId;
             tool.AttackId = existingTool.AttackId;
 
@@ -178,7 +177,6 @@ namespace LifeBook.Controllers
                         throw;
                     }
                 }
-                // Redirigir a la lista de herramientas del ataque
                 return RedirectToAction(nameof(Index), new { attackId = tool.AttackId });
             }
 

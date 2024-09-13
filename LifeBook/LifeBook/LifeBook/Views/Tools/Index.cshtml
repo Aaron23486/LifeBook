@@ -14,13 +14,13 @@
     <a asp-controller="Attacks" asp-action="Index" asp-route-soId="@ViewBag.SoId" class="btn btn-hacker btn-small">Regresar</a>
 </p>
 
-
 <!-- Tabla con estilo hacker -->
 <table class="table table-hacker">
     <thead>
         <tr>
             <th>Nombre de la Herramienta</th>
             <th>Descripción</th>
+            <th>Video URL</th>
             <th>Sistema Operativo</th>
             <th>Ataque</th>
             <th>Acciones</th>
@@ -30,29 +30,44 @@
         @foreach (var item in Model)
         {
             <tr>
+                <td>@Html.DisplayFor(modelItem => item.Name)</td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Name)
+                    <a href="#" class="action-link" data-bs-toggle="modal" data-bs-target="#descriptionModal-@item.Id">
+                        Ver Resumen
+                    </a>
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Description)
+                    <a href="@item.URL" target="_blank" class="action-link">URL</a>
                 </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.So.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Attack.Name)
-                </td>
+                <td>@Html.DisplayFor(modelItem => item.So.Name)</td>
+                <td>@Html.DisplayFor(modelItem => item.Attack.Name)</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id" asp-route-attackId="@item.AttackId" class="btn btn-action">Editar</a>
                     <a asp-action="Details" asp-route-id="@item.Id" asp-route-attackId="@item.AttackId" class="btn btn-action">Detalles</a>
                     <a asp-action="Delete" asp-route-id="@item.Id" asp-route-attackId="@item.AttackId" class="btn btn-action">Eliminar</a>
                 </td>
-
             </tr>
+
+            <!-- Modal para mostrar la descripción -->
+            <div class="modal fade" id="descriptionModal-@item.Id" tabindex="-1" aria-labelledby="descriptionModalLabel-@item.Id" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content hacker-modal">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="descriptionModalLabel-@item.Id">Descripción de la Herramienta</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body hacker-body">
+                            @item.Description
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-hacker" data-bs-dismiss="modal">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         }
     </tbody>
 </table>
-
 
 <!-- Estilos personalizados para la temática hacker -->
 <style>
@@ -102,22 +117,21 @@
 
     .table-hacker {
         width: 100%;
-        background-color: rgba(17, 17, 17, 0.7); /* Fondo negro con 70% de opacidad */
+        background-color: rgba(17, 17, 17, 0.7); /* Fondo negro con transparencia */
         color: #00ff00;
         border: 1px solid #00ff00;
         margin-top: 20px;
     }
 
         .table-hacker th, .table-hacker td {
-            background-color: rgba(17, 17, 17, 0.6); /* Fondo negro con 60% de opacidad */
+            background-color: rgba(17, 17, 17, 0.6); /* Transparencia en las celdas */
             padding: 15px;
             text-align: left;
         }
 
         .table-hacker thead {
-            background-color: rgba(28, 28, 28, 0.8); /* Fondo del encabezado con 80% de opacidad */
+            background-color: rgba(28, 28, 28, 0.8); /* Transparencia en el encabezado */
         }
-
 
     .action-link {
         color: #00ff00;
@@ -127,5 +141,35 @@
         .action-link:hover {
             text-decoration: underline;
             color: #00ff00;
+        }
+
+    /* Estilos de modales */
+    .hacker-modal {
+        background-color: #111111;
+        color: #00ff00;
+        border: 1px solid #00ff00;
+        font-family: 'Courier New', Courier, monospace;
+    }
+
+        .hacker-modal .modal-header,
+        .hacker-modal .modal-body,
+        .hacker-modal .modal-footer {
+            background-color: #111111;
+            color: #00ff00;
+        }
+
+        .hacker-modal .modal-title {
+            color: #00ff00;
+            text-shadow: 0px 0px 10px #00ff00;
+            font-size: 1.5rem;
+        }
+
+        .hacker-modal .btn-close {
+            filter: invert(100%);
+        }
+
+        .hacker-modal .hacker-body {
+            font-size: 1.3rem;
+            line-height: 1.6;
         }
 </style>

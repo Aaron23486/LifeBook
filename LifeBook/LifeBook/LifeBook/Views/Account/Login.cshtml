@@ -4,12 +4,12 @@
     ViewData["Title"] = "Login";
 }
 
-<!-- Encabezado principal con un estilo elegante -->
-<h1 class="hacker-title">Iniciar Sesión</h1>
 
 <!-- Contenedor del formulario de login -->
 <div class="form-container">
     <div class="form-content">
+        <!-- Encabezado principal con un estilo elegante -->
+        <h1 class="hacker-title">Iniciar Sesión</h1>
         <form asp-action="Login">
             <div asp-validation-summary="ModelOnly" class="validation-error"></div>
 
@@ -40,10 +40,14 @@
     </div>
 </div>
 
-<!-- Estilos personalizados para la temática hacker -->
+<!-- Estilos personalizados para la temática hacker y la imagen de fondo -->
 <style>
+    /* Sobreescribe el fondo del layout en esta vista */
     body {
-        background-color: #0a0a0a;
+        background-image: url('/img/FondoLogin.jpg'); /* Cambia esta ruta por la correcta */
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
         color: #00ff00;
         font-family: 'Courier New', Courier, monospace;
     }

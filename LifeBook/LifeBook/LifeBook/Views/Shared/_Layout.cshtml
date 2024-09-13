@@ -19,12 +19,6 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        @* <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li> *@
                         @if (User.IsInRole("Admin"))
                         {
                             <a class="nav-link hacker-link" asp-area="" asp-controller="Sos" asp-action="Index">SO</a>
@@ -35,9 +29,9 @@
                         @if (User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item d-flex align-items-center">
-                                <a class="nav-link hacker-link" asp-area="" asp-controller="Account" asp-action="ChangeUser">@User.Identity.Name</a>
+                                <span class="nav-link hacker-link">@User.Identity.Name</span>
                                 <span class="text-green mx-2">-</span> <!-- El separador en verde -->
-                                <a class="nav-link hacker-link" asp-area="" asp-controller="Account" asp-action="Logout">Logout</a>
+                                <a id="logout-link" class="nav-link hacker-link" href="#">Logout</a>
                             </li>
                         }
                         else
@@ -60,14 +54,69 @@
         </main>
     </div>
 
-    @* <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2024 - LifeBook - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <!-- Modal para la confirmación del logout -->
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content hacker-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="logoutModalLabel">Confirmar Logout</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    ¿Estás seguro que deseas cerrar sesión?
+                </div>
+                <div class="modal-footer">
+                    <a id="confirmLogout" class="btn btn-hacker btn-small">Cerrar Sesión</a>
+                </div>
+            </div>
         </div>
-    </footer> *@
+    </div>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <!-- Script para el manejo del logout con confirmación -->
+    <script>
+        document.getElementById('logout-link').addEventListener('click', function (event) {
+            event.preventDefault();
+            var logoutModal = new bootstrap.Modal(document.getElementById('logoutModal'));
+            logoutModal.show();
+        });
+
+        document.getElementById('confirmLogout').addEventListener('click', function () {
+            window.location.href = '@Url.Action("Logout", "Account")';
+        });
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
+
+    <!-- Estilos para el modal con temática hacker -->
+    <style>
+        .hacker-modal {
+            background-color: #111;
+            color: #00ff00;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+            .hacker-modal .modal-header, .hacker-modal .modal-footer {
+                border: none;
+            }
+
+            .hacker-modal .modal-title {
+                text-shadow: 0px 0px 10px #00ff00;
+            }
+
+            .hacker-modal .btn-hacker {
+                background-color: #111111;
+                color: #00ff00;
+                border: 1px solid #00ff00;
+            }
+
+                .hacker-modal .btn-hacker:hover {
+                    background-color: #00ff00;
+                    color: #111111;
+                }
+    </style>
 </body>
 </html>

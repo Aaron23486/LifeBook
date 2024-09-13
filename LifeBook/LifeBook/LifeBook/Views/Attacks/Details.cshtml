@@ -17,16 +17,19 @@
             </tr>
             <tr>
                 <th>Descripción:</th>
-                <td>@Html.DisplayFor(model => model.Description)</td>
+                <td>
+                    <a href="#" class="action-link" data-bs-toggle="modal" data-bs-target="#descriptionModal">
+                        Ver Resumen
+                    </a>
+                </td>
             </tr>
             <tr>
                 <th>URL del Video:</th>
                 <td>
                     <a href="@Model.VideoUrl" target="_blank" class="action-link">
-                        @Model.VideoUrl
+                        Ver Video
                     </a>
                 </td>
-
             </tr>
             <tr>
                 <th>Sistema Operativo:</th>
@@ -36,14 +39,32 @@
     </div>
 </div>
 
+<!-- Modal para mostrar la descripción -->
+<div class="modal fade" id="descriptionModal" tabindex="-1" aria-labelledby="descriptionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content hacker-modal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="descriptionModalLabel">Descripción del Ataque</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body hacker-body">
+                @Model.Description
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-hacker" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Botones para acciones -->
-<div class="back-link">
+<div class="back-link" style="text-align: center;">
     <a asp-action="Edit" asp-route-id="@Model.Id" asp-route-soId="@Model.SoId" class="btn btn-hacker btn-small">Editar</a>
     <a asp-action="Index" asp-route-soId="@Model.SoId" class="btn btn-hacker btn-small">Volver a la Lista</a>
 </div>
 
 
-<!-- Estilos personalizados para la temática hacker -->
+<!-- Estilos personalizados para botones y otros elementos -->
 <style>
     body {
         background-color: #0a0a0a;
@@ -52,7 +73,7 @@
     }
 
     .hacker-title {
-        font-size: 2.5em;
+        font-size: 3em; /* Aumentamos el tamaño */
         color: #00ff00;
         text-align: center;
         margin-bottom: 20px;
@@ -64,10 +85,11 @@
         justify-content: center;
         align-items: center;
         min-height: 60vh;
+        margin: 20px;
     }
 
     .form-content {
-        background-color: rgba(17, 17, 17, 0.7); /* Fondo negro con transparencia */
+        background-color: rgba(17, 17, 17, 0.7); /* Fondo oscuro con transparencia */
         padding: 20px;
         border-radius: 8px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -75,39 +97,31 @@
         max-width: 600px;
     }
 
-    .table-details {
-        width: 100%;
-        border-collapse: collapse;
+    /* Tabla de detalles */
+    .table-details th {
+        text-align: left;
+        padding-right: 10px;
+        color: #00ff00;
+        font-size: 1.2em;
     }
 
-        .table-details th, .table-details td {
-            padding: 10px;
-            text-align: left;
+    .table-details td {
+        color: #00ff00;
+        font-size: 1.2em;
+    }
+
+    /* Estilos de enlaces */
+    .action-link {
+        color: #00ff00;
+        text-decoration: none;
+    }
+
+        .action-link:hover {
+            text-decoration: underline;
             color: #00ff00;
-            font-size: 1.2em;
-            border-bottom: 1px solid #00ff00;
         }
 
-        .table-details th {
-            width: 30%;
-            font-weight: bold;
-        }
-
-        .table-details td {
-            width: 70%;
-        }
-
-        /* Estilo para los enlaces (links) dentro de la tabla */
-        .table-details a {
-            color: #00ff00;
-            text-decoration: none;
-        }
-
-            .table-details a:hover {
-                text-decoration: underline;
-                color: #00ff00;
-            }
-
+    /* Estilos de botones generales */
     .btn-hacker {
         background-color: #111111;
         color: #00ff00;
@@ -117,28 +131,56 @@
         cursor: pointer;
         font-family: 'Courier New', Courier, monospace;
         display: inline-block;
+        font-size: 1.2em;
         padding: 10px 20px;
+        margin: 5px;
     }
 
+        .btn-hacker:hover {
+            background-color: #00ff00;
+            color: #111111;
+        }
+
+    /* Estilos de los botones pequeños */
     .btn-small {
-        padding: 10px 20px;
+        padding: 8px 16px; /* Ajustamos el tamaño del padding */
+        font-size: 1em; /* Ajustamos el tamaño del texto */
+        margin: 5px;
+    }
+
+    /* Modificamos el estilo de los botones pequeños */
+    .btn-hacker.btn-small {
+        padding: 8px 16px;
         font-size: 1em;
-        margin: 10px 5px;
     }
 
-    .btn-hacker:hover {
-        background-color: #00ff00;
-        color: #111111;
+    /* Estilos de modales */
+    .hacker-modal {
+        background-color: #111111;
+        color: #00ff00;
+        border: 1px solid #00ff00;
+        font-family: 'Courier New', Courier, monospace;
     }
 
-    .back-link {
-        text-align: center;
-        margin-top: 20px;
-    }
+        .hacker-modal .modal-header,
+        .hacker-modal .modal-body,
+        .hacker-modal .modal-footer {
+            background-color: #111111;
+            color: #00ff00;
+        }
 
-    .validation-error {
-        color: #dc3545;
-        font-size: 0.9em;
-        margin-bottom: 10px;
-    }
+        .hacker-modal .modal-title {
+            color: #00ff00;
+            text-shadow: 0px 0px 10px #00ff00;
+            font-size: 1.5rem;
+        }
+
+        .hacker-modal .btn-close {
+            filter: invert(100%);
+        }
+
+        .hacker-modal .hacker-body {
+            font-size: 1.3rem;
+            line-height: 1.6;
+        }
 </style>

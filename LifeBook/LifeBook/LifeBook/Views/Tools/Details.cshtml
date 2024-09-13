@@ -20,6 +20,12 @@
                 <td>@Html.DisplayFor(model => model.Description)</td>
             </tr>
             <tr>
+                <th>URL:</th>
+                <td>
+                    <a href="@Model.URL" target="_blank">@Model.URL</a>
+                </td>
+            </tr>
+            <tr>
                 <th>Sistema Operativo:</th>
                 <td>@Model.So.Name</td> <!-- Mostramos el nombre del SO -->
             </tr>
