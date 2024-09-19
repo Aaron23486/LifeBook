@@ -4,17 +4,12 @@
     ViewData["Title"] = "Editar Herramienta";
 }
 
-<!-- Encabezado principal con un estilo elegante -->
 <h1 class="hacker-title">Editar Herramienta</h1>
 
-<!-- Formulario para editar una herramienta -->
 <div class="form-container">
     <div class="form-content">
-        <form asp-action="Edit" method="post">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="validation-error"></div>
-
-            <!-- Campo oculto para el Id de la herramienta -->
-            <input type="hidden" asp-for="Id" />
 
             <!-- Campo para Nombre de la Herramienta -->
             <div class="form-group">
@@ -30,24 +25,33 @@
                 <span asp-validation-for="Description" class="validation-error"></span>
             </div>
 
+            <!-- Campo para URL -->
             <div class="form-group">
                 <label asp-for="URL" class="control-label">URL</label>
-                <input asp-for="URL" class="form-control hacker-input" placeholder="Edita el enlace de la herramienta..." />
+                <input asp-for="URL" class="form-control hacker-input" placeholder="Introduce el enlace de la herramienta..." />
                 <span asp-validation-for="URL" class="validation-error"></span>
             </div>
 
+            <!-- Mostrar el documento actual si existe -->
+            @if (!string.IsNullOrEmpty(Model.DocumentPath))
+            {
+                <div class="form-group">
+                    <label class="control-label">Documento Actual</label>
+                    <div>
+                        <a href="@Model.DocumentPath" target="_blank" class="action-link">Ver Documento Actual</a>
+                    </div>
+                </div>
+            }
 
-            <!-- Mostrar el SO al que pertenece la herramienta (solo lectura) -->
+            <!-- Campo para cargar un nuevo documento -->
             <div class="form-group">
-                <label class="control-label">Sistema Operativo</label>
-                <input type="text" class="form-control hacker-input hacker-readonly" value="@Model.So.Name" readonly />
+                <label for="documentFile" class="control-label">Cargar nuevo documento (Opcional)</label>
+                <input type="file" name="documentFile" accept=".pdf,.doc,.docx" class="form-control hacker-input" />
             </div>
 
-            <!-- Mostrar el ataque al que pertenece la herramienta (solo lectura) -->
-            <div class="form-group">
-                <label class="control-label">Ataque</label>
-                <input type="text" class="form-control hacker-input hacker-readonly" value="@Model.Attack.Name" readonly />
-            </div>
+            <!-- Campos ocultos para SoId y AttackId -->
+            <input type="hidden" asp-for="SoId" />
+            <input type="hidden" asp-for="AttackId" />
 
             <!-- Botón para guardar los cambios -->
             <div class="form-group">
@@ -57,11 +61,10 @@
     </div>
 </div>
 
-<!-- Botón para volver a la lista -->
 <div class="back-link">
     <a asp-action="Index" asp-route-attackId="@Model.AttackId" class="btn btn-hacker btn-small">Volver a la Lista</a>
-
 </div>
+
 
 <!-- Estilos personalizados para la temática hacker -->
 <style>
@@ -174,4 +177,16 @@
         font-size: 0.9em;
         margin-bottom: 10px;
     }
+
+    /* Estilo para enlaces (no azul) */
+    .action-link {
+        color: #00ff00; /* Verde brillante */
+        text-decoration: none; /* Sin subrayado */
+    }
+
+        .action-link:hover {
+            text-decoration: underline; /* Subrayar al pasar el ratón */
+            color: #00ff00; /* Mantener el color verde */
+        }
+
 </style>

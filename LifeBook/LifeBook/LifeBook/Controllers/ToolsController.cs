@@ -82,10 +82,9 @@ namespace LifeBook.Controllers
         }
 
 
-        // POST: Tools/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,URL")] Tool tool, int attackId)
+        public async Task<IActionResult> Create([Bind("Id,Name,Description,URL")] Tool tool, IFormFile documentFile, int attackId)
         {
             var attack = await _context.Attacks.Include(a => a.So).FirstOrDefaultAsync(a => a.Id == attackId);
             if (attack == null)
@@ -93,21 +92,45 @@ namespace LifeBook.Controllers
                 return NotFound();
             }
 
+            // Asignar manualmente los campos SoId y AttackId
             tool.AttackId = attackId;
             tool.SoId = attack.SoId;
 
-            if (ModelState.IsValid)
+            // Manejar la subida del archivo sin depender de ModelState
+            if (documentFile != null && documentFile.Length > 0)
+            {
+                var fileName = Path.GetFileName(documentFile.FileName);
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/documents", fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await documentFile.CopyToAsync(stream);
+                }
+
+                tool.DocumentPath = $"/documents/{fileName}";
+            }
+            else
+            {
+                // Si no se sube un documento, asignar un valor vacío o nulo
+                tool.DocumentPath = string.Empty; // O null si permites DocumentPath como nullable
+            }
+
+            // Guardar el registro en la base de datos sin depender de ModelState
+            try
             {
                 _context.Add(tool);
                 await _context.SaveChangesAsync();
-                return RedirectToAction("Index", new { attackId = attackId });
+            }
+            catch (Exception ex)
+            {
+                // Manejar cualquier error de base de datos aquí, si es necesario
+                // Por ejemplo, loggear el error o redirigir a una vista de error
+                return BadRequest("Error al crear la herramienta: " + ex.Message);
             }
 
-            ViewData["AttackId"] = attackId;
-            ViewData["SoId"] = attack.SoId;
-            return View(tool);
+            // Redirigir al índice una vez guardado el registro
+            return RedirectToAction(nameof(Index), new { attackId = attackId });
         }
-
 
 
 
@@ -135,20 +158,20 @@ namespace LifeBook.Controllers
         }
 
 
-        // POST: Tools/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,URL")] Tool tool)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,URL,DocumentPath")] Tool tool, IFormFile documentFile)
         {
             if (id != tool.Id)
             {
                 return NotFound();
             }
 
+            // Obtener la herramienta existente
             var existingTool = await _context.Tools
                 .AsNoTracking()
-                .Include(t => t.Attack)
-                .Include(t => t.So)
+                .Include(t => t.Attack) // Incluimos la relación con Attack
+                .Include(t => t.So)     // Incluimos la relación con So
                 .FirstOrDefaultAsync(t => t.Id == id);
 
             if (existingTool == null)
@@ -156,9 +179,30 @@ namespace LifeBook.Controllers
                 return NotFound();
             }
 
+            // Asegúrate de mantener los valores de SoId y AttackId
             tool.SoId = existingTool.SoId;
             tool.AttackId = existingTool.AttackId;
 
+            // Manejo del archivo si es que se carga uno nuevo
+            if (documentFile != null && documentFile.Length > 0)
+            {
+                var fileName = Path.GetFileName(documentFile.FileName);
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/documents", fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await documentFile.CopyToAsync(stream);
+                }
+
+                tool.DocumentPath = $"/documents/{fileName}";
+            }
+            else
+            {
+                // Mantener el DocumentPath existente si no se carga uno nuevo
+                tool.DocumentPath = existingTool.DocumentPath;
+            }
+
+            // Validar si el modelo es válido
             if (ModelState.IsValid)
             {
                 try
@@ -212,11 +256,20 @@ namespace LifeBook.Controllers
             var tool = await _context.Tools.FindAsync(id);
             if (tool != null)
             {
+                // Eliminar el archivo del sistema si existe
+                if (!string.IsNullOrEmpty(tool.DocumentPath))
+                {
+                    var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", tool.DocumentPath.TrimStart('/'));
+                    if (System.IO.File.Exists(fullPath))
+                    {
+                        System.IO.File.Delete(fullPath);
+                    }
+                }
+
                 _context.Tools.Remove(tool);
                 await _context.SaveChangesAsync();
             }
 
-            // Redirigir a la lista de herramientas del ataque
             return RedirectToAction(nameof(Index), new { attackId = tool.AttackId });
         }
 
@@ -225,5 +278,70 @@ namespace LifeBook.Controllers
         {
             return _context.Tools.Any(e => e.Id == id);
         }
+
+
+        [HttpPost]
+        public async Task<IActionResult> UploadDocument(int id, IFormFile documentFile)
+        {
+            var tool = await _context.Tools.FindAsync(id);
+            if (tool == null)
+            {
+                return NotFound();
+            }
+
+            if (documentFile != null && documentFile.Length > 0)
+            {
+                var fileName = Path.GetFileName(documentFile.FileName);
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/documents", fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await documentFile.CopyToAsync(stream);
+                }
+
+                tool.DocumentPath = $"/documents/{fileName}";
+                _context.Update(tool);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index), new { attackId = tool.AttackId });
+        }
+
+
+        public IActionResult GetDocument(string filePath)
+        {
+            // Obtiene la ruta física completa del archivo
+            var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", filePath.TrimStart('/'));
+
+            // Verifica si el archivo existe
+            if (!System.IO.File.Exists(fullPath))
+            {
+                return NotFound(); // Retorna un error si el archivo no existe
+            }
+
+            // Obtiene la extensión del archivo
+            var fileExtension = Path.GetExtension(fullPath).ToLowerInvariant();
+
+            // Define el tipo MIME según la extensión del archivo
+            var mimeType = fileExtension switch
+            {
+                ".pdf" => "application/pdf",
+                ".doc" => "application/msword",
+                ".docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                ".xls" => "application/vnd.ms-excel",
+                ".xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                ".ppt" => "application/vnd.ms-powerpoint",
+                ".pptx" => "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+                _ => "application/octet-stream" // Valor por defecto si no coincide con ninguna extensión conocida
+            };
+
+            // Lee el archivo desde el sistema de archivos
+            var fileBytes = System.IO.File.ReadAllBytes(fullPath);
+
+            // Retorna el archivo con el tipo MIME correspondiente
+            return File(fileBytes, mimeType);
+        }
+
+
     }
 }

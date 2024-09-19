@@ -4,10 +4,8 @@
     ViewData["Title"] = "Detalles de la Herramienta";
 }
 
-<!-- Título principal con un estilo elegante -->
 <h1 class="hacker-title">Detalles de la Herramienta</h1>
 
-<!-- Detalles de la herramienta, alineados de manera más clara -->
 <div class="form-container">
     <div class="form-content">
         <table class="table-details">
@@ -17,31 +15,67 @@
             </tr>
             <tr>
                 <th>Descripción:</th>
-                <td>@Html.DisplayFor(model => model.Description)</td>
+                <td>
+                    <a href="#" class="action-link" data-bs-toggle="modal" data-bs-target="#descriptionModal">
+                        Ver Resumen
+                    </a>
+                </td>
             </tr>
             <tr>
                 <th>URL:</th>
                 <td>
-                    <a href="@Model.URL" target="_blank">@Model.URL</a>
+                    <a href="@Model.URL" target="_blank" class="action-link">URL</a>
                 </td>
             </tr>
             <tr>
+            <tr>
+                <th>Documento:</th>
+                <td>
+                        @if (!string.IsNullOrEmpty(Model.DocumentPath))
+                        {
+                        <a href="@Url.Content(Model.DocumentPath)" target="_blank" class="action-link">Ver Documento</a>
+                        }
+                        else
+                        {
+                        <span>No hay documento adjunto</span>
+                        }
+                </td>
+            </tr>
+
+            </tr>
+            <tr>
                 <th>Sistema Operativo:</th>
-                <td>@Model.So.Name</td> <!-- Mostramos el nombre del SO -->
+                <td>@Model.So.Name</td>
             </tr>
             <tr>
                 <th>Ataque:</th>
-                <td>@Model.Attack.Name</td> <!-- Mostramos el nombre del ataque -->
+                <td>@Model.Attack.Name</td>
             </tr>
         </table>
     </div>
 </div>
 
-<!-- Botones para acciones -->
-<div class="back-link">
-    <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-hacker btn-small">Editar</a>
-    <a asp-action="Index" asp-route-attackId="@Model.AttackId" class="btn btn-hacker btn-small">Volver a la Lista</a>
+<div class="modal fade" id="descriptionModal" tabindex="-1" aria-labelledby="descriptionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content hacker-modal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="descriptionModalLabel">Descripción de la Herramienta</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body hacker-body">
+                @Model.Description
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-hacker" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
 
+<div class="back-link">
+    <a asp-action="Edit" asp-route-id="@Model.Id" asp-route-attackId="@Model.AttackId" class="btn btn-hacker">Editar</a>
+    <a asp-action="Index" asp-route-attackId="@Model.AttackId" class="btn btn-hacker btn-small">Volver a la Lista</a>
+</div>
 <!-- Estilos personalizados para la temática hacker -->
 <style>
     body {
@@ -123,4 +157,16 @@
         text-align: center;
         margin-top: 20px;
     }
+
+    /* Estilo para los enlaces */
+    .action-link {
+        color: #00ff00; /* Color verde */
+        text-decoration: none; /* Eliminar el subrayado */
+    }
+
+        .action-link:hover {
+            color: #00ff00;
+            text-decoration: underline; /* Subrayar al pasar el mouse */
+        }
+
 </style>

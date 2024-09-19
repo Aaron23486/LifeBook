@@ -10,7 +10,7 @@
 <!-- Formulario para crear una nueva herramienta -->
 <div class="form-container">
     <div class="form-content">
-        <form asp-action="Create" method="post">
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="validation-error"></div>
 
             <!-- Campo para Nombre de la Herramienta -->
@@ -27,16 +27,23 @@
                 <span asp-validation-for="Description" class="validation-error"></span>
             </div>
 
+            <!-- Campo para URL -->
             <div class="form-group">
                 <label asp-for="URL" class="control-label">URL</label>
                 <input asp-for="URL" class="form-control hacker-input" placeholder="Introduce el enlace de la herramienta..." />
                 <span asp-validation-for="URL" class="validation-error"></span>
             </div>
 
-            <!-- Campo oculto para SoId (clave foránea) -->
+            <!-- Campo para Documento -->
+            <div class="form-group">
+                <label for="documentFile" class="control-label">Documento</label>
+                <input type="file" name="documentFile" accept=".pdf,.doc,.docx" class="form-control hacker-input" />
+            </div>
+
+            <!-- Campo oculto para SoId -->
             <input type="hidden" asp-for="SoId" value="@ViewData["SoId"]" />
 
-            <!-- Campo oculto para AttackId (clave foránea) -->
+            <!-- Campo oculto para AttackId -->
             <input type="hidden" asp-for="AttackId" value="@ViewData["AttackId"]" />
 
             <!-- Botón para crear -->
@@ -44,6 +51,7 @@
                 <input type="submit" value="Crear" class="btn btn-hacker btn-large" />
             </div>
         </form>
+
     </div>
 </div>
 

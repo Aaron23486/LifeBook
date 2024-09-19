@@ -4,10 +4,8 @@
     ViewData["Title"] = "Eliminar Herramienta";
 }
 
-<!-- Título principal con un estilo elegante -->
 <h1 class="hacker-title">Eliminar Herramienta</h1>
 
-<!-- Confirmación de eliminación -->
 <h3 class="hacker-subtitle">¿Estás seguro de que deseas eliminar esta herramienta?</h3>
 
 <div class="form-container">
@@ -32,18 +30,31 @@
                 </td>
             </tr>
             <tr>
+                <th>Documento:</th>
+                <td>
+                    @if (!string.IsNullOrEmpty(Model.DocumentPath))
+                    {
+                        <a href="@Url.Content(Model.DocumentPath)" target="_blank" class="action-link">Ver Documento</a>
+                    }
+                    else
+                    {
+                        <span>No hay documento adjunto</span>
+                    }
+                </td>
+            </tr>
+
+            <tr>
                 <th>Sistema Operativo:</th>
-                <td>@Model.So.Name</td> <!-- Mostramos el nombre del SO -->
+                <td>@Model.So.Name</td>
             </tr>
             <tr>
                 <th>Ataque:</th>
-                <td>@Model.Attack.Name</td> <!-- Mostramos el nombre del ataque -->
+                <td>@Model.Attack.Name</td>
             </tr>
         </table>
     </div>
 </div>
 
-<!-- Modal para mostrar la descripción -->
 <div class="modal fade" id="descriptionModal" tabindex="-1" aria-labelledby="descriptionModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content hacker-modal">
@@ -61,7 +72,6 @@
     </div>
 </div>
 
-<!-- Formulario de confirmación -->
 <div class="back-link">
     <form asp-action="Delete" method="post">
         <input type="hidden" asp-for="Id" />

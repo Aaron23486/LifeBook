@@ -4,25 +4,22 @@
     ViewData["Title"] = "Resumen de Herramientas";
 }
 
-<!-- Encabezado principal con un estilo elegante -->
 <h1 class="hacker-title">Resumen de Herramientas</h1>
 
-<!-- Botón para crear una nueva herramienta con attackId -->
 <p>
     <a asp-action="Create" asp-route-attackId="@ViewBag.CurrentAttackId" class="btn btn-hacker">Crear Nuevo</a>
-
     <a asp-controller="Attacks" asp-action="Index" asp-route-soId="@ViewBag.SoId" class="btn btn-hacker btn-small">Regresar</a>
 </p>
 
-<!-- Tabla con estilo hacker -->
 <table class="table table-hacker">
     <thead>
         <tr>
-            <th>Nombre de la Herramienta</th>
+            <th>SO</th>
+            <th>Ataque</th>
+            <th>Herramienta</th>
             <th>Descripción</th>
             <th>Video URL</th>
-            <th>Sistema Operativo</th>
-            <th>Ataque</th>
+            <th>Documento</th>
             <th>Acciones</th>
         </tr>
     </thead>
@@ -30,6 +27,8 @@
         @foreach (var item in Model)
         {
             <tr>
+                <td>@Html.DisplayFor(modelItem => item.So.Name)</td>
+                <td>@Html.DisplayFor(modelItem => item.Attack.Name)</td>
                 <td>@Html.DisplayFor(modelItem => item.Name)</td>
                 <td>
                     <a href="#" class="action-link" data-bs-toggle="modal" data-bs-target="#descriptionModal-@item.Id">
@@ -39,8 +38,19 @@
                 <td>
                     <a href="@item.URL" target="_blank" class="action-link">URL</a>
                 </td>
-                <td>@Html.DisplayFor(modelItem => item.So.Name)</td>
-                <td>@Html.DisplayFor(modelItem => item.Attack.Name)</td>
+                <!-- Columna de Documento -->
+                <td>
+                    @if (!string.IsNullOrEmpty(item.DocumentPath))
+                    {
+                        <!-- Si hay un documento, muestra el enlace para verlo -->
+                        <a href="@Url.Action("GetDocument", new { filePath = item.DocumentPath })" target="_blank" class="action-link">Ver Documento</a>
+                    }
+                    else
+                    {
+                        <!-- Si no hay documento, mostrar "Sin Documento" sin acciones -->
+                        <span class="no-document">Sin Documento</span>
+                    }
+                </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id" asp-route-attackId="@item.AttackId" class="btn btn-action">Editar</a>
                     <a asp-action="Details" asp-route-id="@item.Id" asp-route-attackId="@item.AttackId" class="btn btn-action">Detalles</a>
@@ -65,9 +75,32 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Modal para mostrar la descripción -->
+            <div class="modal fade" id="descriptionModal-@item.Id" tabindex="-1" aria-labelledby="descriptionModalLabel-@item.Id" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content hacker-modal">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="descriptionModalLabel-@item.Id">Descripción de la Herramienta</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body hacker-body">
+                            @item.Description
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-hacker" data-bs-dismiss="modal">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         }
     </tbody>
 </table>
+
+
+
+
+
 
 <!-- Estilos personalizados para la temática hacker -->
 <style>
@@ -172,4 +205,9 @@
             font-size: 1.3rem;
             line-height: 1.6;
         }
+
+    .no-document {
+        color: #ff0000; /* Puedes ajustar este color según el estilo que desees */
+        font-weight: bold;
+    }
 </style>
