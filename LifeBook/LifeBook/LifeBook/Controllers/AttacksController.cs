@@ -33,10 +33,11 @@ namespace LifeBook.Controllers
                 query = query.Where(a => a.SoId == soId);
             }
 
-            var attacks = await query.ToListAsync();
-
+            var attacks = await query.ToListAsync(); // Obtener todos los registros sin limitar la cantidad
             return View(attacks);
         }
+
+
 
 
 
