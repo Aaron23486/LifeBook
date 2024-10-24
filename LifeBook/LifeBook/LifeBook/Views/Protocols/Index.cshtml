@@ -1,0 +1,231 @@
+﻿@model IEnumerable<LifeBook.Data.Entities.Protocol>
+
+@{
+    ViewData["Title"] = "Resumen de Protocolos";
+}
+
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+<h1 class="hacker-title">Resumen de Protocolos</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-hacker">Crear Nuevo</a>
+</p>
+
+<!-- Filtro de búsqueda -->
+<div class="mb-3 d-flex align-items-center justify-content-between">
+    <div class="me-2">
+        <input type="text" id="searchInput" class="form-control form-control-sm hacker-input" placeholder="Filtro">
+    </div>
+</div>
+
+<table class="table table-hacker">
+    <thead>
+        <tr>
+            <th>Puerto</th>
+            <th>Nombre del Protocolo</th>
+            <th>Descripción</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody id="protocolTableBody">
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Port)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    <!-- Botón para abrir el modal de descripción -->
+                    <a href="#" class="action-link" data-bs-toggle="modal" data-bs-target="#descriptionModal-@item.Id">
+                        Ver Resumen
+                    </a>
+
+                    <!-- Modal para mostrar la descripción del protocolo -->
+                    <div class="modal fade" id="descriptionModal-@item.Id" tabindex="-1" aria-labelledby="descriptionModalLabel-@item.Id" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content hacker-modal">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="descriptionModalLabel-@item.Id">Descripción de @item.Name</h5>
+                                    <button type="button" class="btn-close hacker-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                </div>
+                                <div class="modal-body hacker-body">
+                                    @Html.DisplayFor(modelItem => item.Description)
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-hacker btn-large" data-bs-dismiss="modal">Cerrar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-action">Editar</a>
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-action">Detalles</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-action">Eliminar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Script para filtrar los protocolos por nombre -->
+<script>
+    document.getElementById('searchInput').addEventListener('input', function () {
+        var searchValue = this.value.toLowerCase().trim();
+        var tableRows = document.querySelectorAll('#protocolTableBody tr');
+
+        tableRows.forEach(function (row) {
+            // Obtener el texto del campo 'Puerto' y 'Nombre del Protocolo'
+            var portCell = row.querySelector('td:nth-child(1)').textContent.toLowerCase();
+            var nameCell = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+
+            // Dividir los puertos por coma y quitar espacios
+            var ports = portCell.split(',').map(p => p.trim());
+
+            // Verificar si el puerto filtrado coincide con alguno de los puertos o si coincide con el nombre del protocolo
+            if (ports.includes(searchValue) || nameCell.includes(searchValue)) {
+                row.style.display = '';  // Mostrar la fila si coincide
+            } else {
+                row.style.display = 'none';  // Ocultar la fila si no coincide
+            }
+        });
+    });
+
+</script>
+
+<style>
+    body {
+        background-color: #0a0a0a;
+        color: #00ff00;
+        font-family: 'Courier New', Courier, monospace;
+    }
+
+    .hacker-title {
+        font-size: 2.5em;
+        color: #00ff00;
+        text-align: left;
+        margin-bottom: 20px;
+        text-shadow: 0px 0px 10px #00ff00;
+    }
+
+    .btn-hacker {
+        background-color: #111111;
+        color: #00ff00;
+        border: 1px solid #00ff00;
+        padding: 10px 20px;
+        text-transform: uppercase;
+        text-decoration: none;
+        cursor: pointer;
+        font-family: 'Courier New', Courier, monospace;
+    }
+
+        .btn-hacker:hover {
+            background-color: #00ff00;
+            color: #111111;
+        }
+
+    .btn-action {
+        background-color: #111111;
+        color: #00ff00;
+        border: 1px solid #00ff00;
+        padding: 5px 10px;
+        text-decoration: none;
+        display: inline-block;
+        margin-right: 5px;
+    }
+
+        .btn-action:hover {
+            background-color: #00ff00;
+            color: #111111;
+        }
+
+    .table-hacker {
+        width: 100%;
+        background-color: rgba(17, 17, 17, 0.7);
+        color: #00ff00;
+        border: 1px solid #00ff00;
+        margin-top: 20px;
+    }
+
+        .table-hacker th, .table-hacker td {
+            background-color: rgba(17, 17, 17, 0.6);
+            padding: 15px;
+            text-align: left;
+        }
+
+        .table-hacker thead {
+            background-color: rgba(28, 28, 28, 0.8);
+        }
+
+    .action-link {
+        color: #00ff00;
+        text-decoration: none;
+    }
+
+        .action-link:hover {
+            text-decoration: underline;
+            color: #00ff00;
+        }
+
+    .hacker-modal {
+        background-color: #111111;
+        color: #00ff00;
+        border: 1px solid #00ff00;
+        font-family: 'Courier New', Courier, monospace;
+    }
+
+        .hacker-modal .modal-header,
+        .hacker-modal .modal-body,
+        .hacker-modal .modal-footer {
+            background-color: #111111;
+            color: #00ff00;
+        }
+
+        .hacker-modal .modal-title {
+            color: #00ff00;
+            text-shadow: 0px 0px 10px #00ff00;
+            font-size: 1.5rem;
+        }
+
+        .hacker-modal .btn-close {
+            filter: invert(100%);
+        }
+
+        .hacker-modal .hacker-body {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+    .modal-dialog-centered {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .form-control-sm {
+        max-width: 200px;
+    }
+
+    .hacker-input, .hacker-select {
+        background-color: #111111;
+        color: #00ff00;
+        border: 1px solid #00ff00;
+    }
+
+        .hacker-input::placeholder, .hacker-select option {
+            color: #00ff00;
+        }
+
+        .hacker-input:focus, .hacker-select:focus {
+            border-color: #00ff00;
+            box-shadow: 0 0 0 0.2rem rgba(0, 255, 0, 0.25);
+        }
+</style>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+}
