@@ -18,15 +18,16 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                    <ul class="navbar-nav flex-grow-1 navbar-links">
+                        <!-- Agregada la clase navbar-links -->
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link hacker-link" asp-area="" asp-controller="Sos" asp-action="Index">SO</a>
                             </li>
-                             <li class="nav-item">
+                            <li class="nav-item">
                                 <a class="nav-link hacker-link" asp-area="" asp-controller="Protocols" asp-action="Index">PROTOCOL</a>
-                            </li>              
+                            </li>
                             <li class="nav-item">
                                 <a class="nav-link hacker-link" asp-area="" asp-controller="IACategories" asp-action="Index">IA</a>
                             </li>
@@ -53,8 +54,6 @@
             </div>
         </nav>
     </header>
-
-
 
     <div class="container">
         <main role="main" class="pb-3">
@@ -125,6 +124,71 @@
                     background-color: #00ff00;
                     color: #111111;
                 }
+
+        /* Estilos para la barra de navegación */
+        .nav-link {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+            .nav-link:hover {
+                transform: translateY(-5px);
+            }
+
+            .nav-link.selected {
+                transform: scale(1.2);
+                font-weight: bold;
+                color: #00ff00;
+            }
+
+        /* Línea debajo del enlace seleccionado solo en la clase .navbar-links */
+        .navbar-links .nav-link.selected::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: #00ff00; /* El color de la línea */
+        }
     </style>
+
+    <script>
+        // Almacenamos la selección en el localStorage
+        const navLinks = document.querySelectorAll('.navbar-links .nav-link');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', function () {
+                // Eliminar la clase 'selected' de todos los enlaces
+                navLinks.forEach(link => link.classList.remove('selected'));
+                // Agregar la clase 'selected' solo al enlace actual
+                this.classList.add('selected');
+                // Guardar la selección en el localStorage
+                localStorage.setItem('selectedNavLink', this.textContent);
+            });
+        });
+
+        // Recuperamos la selección almacenada del localStorage y la aplicamos
+        document.addEventListener('DOMContentLoaded', () => {
+            const selectedLinkText = localStorage.getItem('selectedNavLink');
+            if (selectedLinkText) {
+                navLinks.forEach(link => {
+                    if (link.textContent === selectedLinkText) {
+                        link.classList.add('selected');
+                    }
+                });
+            }
+        });
+
+        // Borrar la selección del localStorage cuando se navega a Home o se cierra sesión
+        document.querySelector('.navbar-brand').addEventListener('click', function () {
+            localStorage.removeItem('selectedNavLink');
+        });
+
+        // Borrar la selección del localStorage al hacer logout
+        document.getElementById('logout-link').addEventListener('click', function () {
+            localStorage.removeItem('selectedNavLink');
+        });
+    </script>
 </body>
 </html>
