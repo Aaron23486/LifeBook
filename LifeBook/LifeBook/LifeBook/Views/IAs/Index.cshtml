@@ -9,8 +9,12 @@
 
 <!-- Botón para crear un nuevo elemento -->
 <p>
-    <a asp-action="Create" class="btn btn-hacker">Crear Nuevo</a>
+    <!-- Utilizar el valor de categoryId desde ViewBag -->
+    <a asp-action="Create" asp-route-categoryId="@ViewBag.CategoryId" class="btn btn-hacker">Crear Nuevo</a>
+    <a asp-controller="IACategories" asp-action="Index" class="btn btn-hacker btn-small">Regresar</a>
 </p>
+
+
 
 <!-- Tabla con estilo hacker -->
 <table class="table table-hacker">
@@ -19,6 +23,7 @@
             <th>Nombre de la IA</th>
             <th>Categoría</th>
             <th>Descripción</th>
+            <th>URL</th> <!-- Nueva columna para la URL -->
             <th>Acciones</th>
         </tr>
     </thead>
@@ -37,9 +42,20 @@
                     @Html.DisplayFor(modelItem => item.Description)
                 </td>
                 <td>
+                    <!-- Agregar la columna URL -->
+                    @if (!string.IsNullOrEmpty(item.Url))
+                    {
+                        <a href="@item.Url" target="_blank" class="action-link">URL</a>
+                    }
+                    else
+                    {
+                        <span>No disponible</span> <!-- Mensaje si no hay URL -->
+                    }
+                </td>
+                <td>
                     <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-action">Editar</a>
                     <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-action">Detalles</a>
-                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-action">Eliminar</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" asp-route-categoryId="@item.CategoryId" class="btn btn-action">Eliminar</a>
                 </td>
             </tr>
         }

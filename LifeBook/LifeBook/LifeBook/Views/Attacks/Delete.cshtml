@@ -58,6 +58,16 @@
 </div>
 
 
+<!-- Formulario de confirmación -->
+<div class="back-link">
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Eliminar" class="btn btn-hacker btn-danger" />
+        <a asp-action="Index" asp-route-soId="@Model.SoId" class="btn btn-hacker btn-small">Volver a la Lista</a>
+    </form>
+</div>
+
+
 
 <!-- Estilos personalizados para la temática hacker -->
 <style>

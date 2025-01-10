@@ -1,68 +1,79 @@
-﻿@model LifeBook.Data.Entities.Protocol
+﻿@model LifeBook.Data.Entities.IA
 
 @{
-    ViewData["Title"] = "Eliminar";
+    ViewData["Title"] = "Eliminar IA";
 }
 
-<!-- Título principal con un estilo elegante -->
-<h1 class="hacker-title">Eliminar Protocolo</h1>
+<h1 class="hacker-title">Eliminar IA</h1>
 
-<!-- Confirmación de eliminación -->
-<h3 class="hacker-subtitle">¿Estás seguro de que deseas eliminar este protocolo?</h3>
+<h3 class="hacker-subtitle">¿Estás seguro de que deseas eliminar esta IA?</h3>
 
 <div class="form-container">
     <div class="form-content">
         <table class="table-details">
             <tr>
-                <th>Protocolo:</th>
+                <th>Nombre:</th>
                 <td>@Html.DisplayFor(model => model.Name)</td>
             </tr>
             <tr>
                 <th>Descripción:</th>
                 <td>
-                    <!-- Botón para abrir el modal de descripción -->
-                    <a href="#" class="action-link" data-bs-toggle="modal" data-bs-target="#deleteDescriptionModal">
+                    <a href="#" class="action-link" data-bs-toggle="modal" data-bs-target="#descriptionModal">
                         Ver Resumen
                     </a>
                 </td>
             </tr>
             <tr>
-                <th>Puerto:</th>
-                <td>@Html.DisplayFor(model => model.Port)</td>
+                <th>URL:</th>
+                <td><a href="@Model.Url" target="_blank" class="action-link">Ver IA</a></td>
+            </tr>
+            <tr>
+                <th>Categoría:</th>
+                <td>
+                    @if (Model.IACategory != null)
+                    {
+                        @Model.IACategory.Name
+                    }
+                    else
+                    {
+                        <span>No asignada</span>
+                    }
+                </td>
             </tr>
         </table>
     </div>
 </div>
 
-<!-- Modal para mostrar la confirmación de eliminación del protocolo -->
-<div class="modal fade" id="deleteDescriptionModal" tabindex="-1" aria-labelledby="deleteDescriptionModalLabel" aria-hidden="true">
+<div class="modal fade" id="descriptionModal" tabindex="-1" aria-labelledby="descriptionModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content hacker-modal">
             <div class="modal-header">
-                <h5 class="modal-title" id="deleteDescriptionModalLabel">Eliminar @Model.Name</h5>
-                <button type="button" class="btn-close hacker-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                <h5 class="modal-title" id="descriptionModalLabel">Descripción de la IA</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body hacker-body">
-                <p>¿Estás seguro de que deseas eliminar el protocolo <strong>@Model.Name</strong>?</p>
-                <p><em>@Html.DisplayFor(model => model.Description)</em></p>
+                @Model.Description
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-hacker btn-large" id="confirmDelete">Eliminar</button>
+                <button type="button" class="btn btn-hacker" data-bs-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>
 </div>
 
-
-<!-- Formulario de confirmación -->
 <div class="back-link">
     <form asp-action="Delete" method="post">
+        <!-- Campo oculto para el Id de la IA -->
         <input type="hidden" asp-for="Id" />
+        <!-- Campo oculto para el categoryId -->
+        <input type="hidden" name="categoryId" value="@ViewBag.CategoryId" />
         <input type="submit" value="Eliminar" class="btn btn-hacker btn-danger" />
-        <a asp-action="Index" class="btn btn-hacker btn-small">Volver a la Lista</a>
+        <a asp-action="Index" asp-route-categoryId="@Model.CategoryId" class="btn btn-hacker btn-small">Volver a la Lista</a>
     </form>
 </div>
+
+
+
 
 <!-- Estilos personalizados para la temática hacker -->
 <style>
@@ -103,15 +114,6 @@
         width: 100%;
         max-width: 600px;
     }
-
-    .action-link {
-        color: #00ff00;
-        text-decoration: none;
-    }
-
-        .action-link:hover {
-            text-decoration: underline;
-        }
 
     .table-details {
         width: 100%;
@@ -174,9 +176,42 @@
         margin-top: 20px;
     }
 
-    .validation-error {
-        color: #dc3545;
-        font-size: 0.9em;
-        margin-bottom: 10px;
+    .action-link {
+        color: #00ff00;
+        text-decoration: none;
     }
+
+        .action-link:hover {
+            text-decoration: underline;
+        }
+
+    /* Estilos de modales */
+    .hacker-modal {
+        background-color: #111111;
+        color: #00ff00;
+        border: 1px solid #00ff00;
+        font-family: 'Courier New', Courier, monospace;
+    }
+
+        .hacker-modal .modal-header,
+        .hacker-modal .modal-body,
+        .hacker-modal .modal-footer {
+            background-color: #111111;
+            color: #00ff00;
+        }
+
+        .hacker-modal .modal-title {
+            color: #00ff00;
+            text-shadow: 0px 0px 10px #00ff00;
+            font-size: 1.5rem;
+        }
+
+        .hacker-modal .btn-close {
+            filter: invert(100%);
+        }
+
+        .hacker-modal .hacker-body {
+            font-size: 1.3rem;
+            line-height: 1.6;
+        }
 </style>

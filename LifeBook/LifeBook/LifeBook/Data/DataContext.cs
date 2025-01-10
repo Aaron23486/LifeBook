@@ -57,7 +57,8 @@ namespace LifeBook.Data
                 .HasMany(c => c.IAs)
                 .WithOne(i => i.IACategory)
                 .HasForeignKey(i => i.CategoryId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);  // Cambiar a DeleteBehavior.Cascade
         }
+
     }
 }

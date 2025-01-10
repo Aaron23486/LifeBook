@@ -1,0 +1,163 @@
+﻿@model LifeBook.Data.Entities.IA
+
+@{
+    ViewData["Title"] = "Crear IA";
+}
+
+<!-- Encabezado principal con estilo elegante -->
+<h1 class="hacker-title">Crear Nueva IA</h1>
+
+<!-- Formulario para crear una nueva IA -->
+<div class="form-container">
+    <div class="form-content">
+        <form asp-action="Create" method="post">
+            <!-- Nombre de la IA -->
+            <div class="form-group">
+                <label asp-for="Name" class="control-label">Nombre de la IA</label>
+                <input asp-for="Name" class="form-control hacker-input" placeholder="Introduce el nombre de la IA..." />
+                <span asp-validation-for="Name" class="validation-error"></span>
+            </div>
+
+            <!-- Descripción -->
+            <div class="form-group">
+                <label asp-for="Description" class="control-label">Descripción</label>
+                <textarea asp-for="Description" class="form-control hacker-input" placeholder="Introduce la descripción..."></textarea>
+                <span asp-validation-for="Description" class="validation-error"></span>
+            </div>
+
+            <!-- URL del video -->
+            <div class="form-group">
+                <label asp-for="Url" class="control-label">URL</label>
+                <input asp-for="Url" class="form-control hacker-input" placeholder="Introduce la URL..." />
+                <span asp-validation-for="Url" class="validation-error"></span>
+            </div>
+
+            <!-- Campo oculto para categoryId -->
+            <input type="hidden" name="categoryId" value="@ViewBag.CategoryId" />
+
+            <!-- Botón de Crear -->
+            <div class="form-group">
+                <input type="submit" value="Crear" class="btn btn-hacker btn-large" />
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<div class="back-link">
+    <!-- Agregar el parámetro categoryId al enlace -->
+    <a asp-action="Index" asp-route-categoryId="@ViewBag.CategoryId" class="btn btn-hacker btn-small">Volver a la Lista</a>
+</div>
+
+
+<!-- Estilos personalizados para la temática hacker -->
+<style>
+    body {
+        background-color: #0a0a0a;
+        color: #00ff00;
+        font-family: 'Courier New', Courier, monospace;
+    }
+
+    .hacker-title {
+        font-size: 2.5em;
+        color: #00ff00;
+        text-align: center;
+        margin-bottom: 20px;
+        text-shadow: 0px 0px 10px #00ff00;
+    }
+
+    .form-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 60vh;
+    }
+
+    .form-content {
+        background-color: rgba(17, 17, 17, 0.7); /* Fondo negro con transparencia */
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .control-label {
+        display: block;
+        font-weight: bold;
+        color: #00ff00;
+        margin-bottom: 8px;
+    }
+
+    .hacker-input {
+        width: 100%;
+        padding: 10px;
+        font-size: 1em;
+        border: 1px solid #00ff00;
+        border-radius: 4px;
+        background-color: #1c1c1c;
+        color: #00ff00;
+    }
+
+        .hacker-input:focus {
+            border-color: #00ff00;
+            background-color: #000000;
+            color: #00ff00;
+            outline: none;
+        }
+
+    .btn-hacker {
+        background-color: #111111;
+        color: #00ff00;
+        border: 1px solid #00ff00;
+        text-transform: uppercase;
+        text-decoration: none;
+        cursor: pointer;
+        font-family: 'Courier New', Courier, monospace;
+        display: inline-block;
+    }
+
+    /* Botón grande para "Crear" */
+    .btn-large {
+        padding: 10px 20px;
+        width: 100%;
+        font-size: 1em;
+    }
+
+    /* Botón pequeño para "Volver a la Lista" */
+    .btn-small {
+        padding: 10px 20px;
+        font-size: 1em;
+        width: auto;
+        margin: 0 auto;
+    }
+
+    .btn-hacker:hover {
+        background-color: #00ff00;
+        color: #111111;
+    }
+
+    .back-link {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .action-link {
+        color: #00ff00;
+        text-decoration: none;
+    }
+
+        .action-link:hover {
+            text-decoration: underline;
+        }
+
+    .validation-error {
+        color: #dc3545;
+        font-size: 0.9em;
+        margin-bottom: 10px;
+    }
+</style>

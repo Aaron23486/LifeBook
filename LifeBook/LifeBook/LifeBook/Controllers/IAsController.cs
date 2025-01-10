@@ -1,4 +1,5 @@
 ﻿using LifeBook.Data;
+using LifeBook.Data.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,86 +16,184 @@ namespace LifeBook.Controllers
         {
             _context = context;
         }
-        // GET: IAController/Index
+
+
+        // GET: IAsController/Index
         public async Task<IActionResult> Index(int categoryId)
         {
-            // Obtener todas las IAs que pertenecen a la categoría seleccionada
+            if (categoryId == 0)
+            {
+                return RedirectToAction("Index", "Home"); // Redirigir si no se pasa un categoryId válido
+            }
+
             var iasInCategory = await _context.IAs
                                                .Where(ia => ia.CategoryId == categoryId)
-                                               .Include(ia => ia.IACategory) // Asegurarse de incluir la categoría al cargar las IAs
+                                               .Include(ia => ia.IACategory)
                                                .ToListAsync();
 
-            // Pasar la lista de IAs a la vista
+            ViewBag.CategoryId = categoryId;
             return View(iasInCategory);
         }
 
+
+
+
         // GET: IAsController/Details/5
-        public ActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
+            var ia = await _context.IAs
+                                    .Include(i => i.IACategory) // Si necesitas cargar la categoría relacionada
+                                    .FirstOrDefaultAsync(i => i.Id == id);
+
+            if (ia == null)
+            {
+                return NotFound();
+            }
+
+            return View(ia);
+        }
+
+
+        // GET: IAsController/Create
+        [HttpGet]
+        public IActionResult Create(int? categoryId)
+        {
+            // Si categoryId no es nulo, lo asignamos al ViewBag
+            ViewBag.CategoryId = categoryId;
+
+            // Obtener las categorías
+            var categories = _context.IACategories.ToList();
+            ViewBag.IACategories = categories;
+
             return View();
         }
 
-        // GET: IAsController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
 
         // POST: IAsController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create([Bind("Name, Description, Url")] IA ia, int categoryId)
         {
-            try
+            if (ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Index));
+                // Asignar el categoryId a la IA
+                ia.CategoryId = categoryId;
+
+                // Guardar la IA en la base de datos
+                _context.Add(ia);
+                _context.SaveChanges();
+
+                // Redirigir con el categoryId a la lista de IAs
+                return RedirectToAction(nameof(Index), new { categoryId = categoryId });
             }
-            catch
-            {
-                return View();
-            }
+
+            // Si no es válido, devolver la vista con errores
+            return View(ia);
         }
+
+
+
+
+
+
+
 
         // GET: IAsController/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            var ia = _context.IAs.Find(id); // Aquí debes obtener el objeto IA por su id
+            if (ia == null)
+            {
+                return NotFound();
+            }
+            ViewBag.CategoryId = ia.CategoryId;  // Asigna el categoryId a ViewBag
+            return View(ia);
         }
+
 
         // POST: IAsController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(int id, IA ia, int categoryId)
         {
-            try
+            if (id != ia.Id)
             {
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
-            catch
+
+            if (ModelState.IsValid)
             {
-                return View();
+                try
+                {
+                    // Actualiza la IA en la base de datos
+                    _context.Update(ia);
+                    _context.SaveChanges(); // Guarda los cambios
+
+                    // Redirige a la página de índice (debe incluir categoryId)
+                    return RedirectToAction(nameof(Index), new { categoryId = categoryId });
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    // Si ocurre una excepción de concurrencia, significa que la IA ya no existe
+                    if (!_context.IAs.Any(e => e.Id == ia.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
             }
+
+            // Si el modelo no es válido, vuelve a la vista de edición con los errores
+            return View(ia);
         }
 
-        // GET: IAsController/Delete/5
-        public ActionResult Delete(int id)
+
+
+        public IActionResult Delete(int id, int categoryId)
         {
-            return View();
+            var iaItem = _context.IAs
+                .Include(i => i.IACategory) // Asegúrate de cargar la categoría
+                .FirstOrDefault(i => i.Id == id);
+
+            if (iaItem == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.CategoryId = categoryId; // Asegúrate de pasar correctamente el categoryId
+            return View(iaItem);
         }
 
-        // POST: IAsController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+
+
+
+        [HttpPost, ActionName("Delete")]
+        public IActionResult DeleteConfirmed(int id, int categoryId)
         {
-            try
+            var iaItem = _context.IAs.FirstOrDefault(i => i.Id == id);
+
+            if (iaItem == null)
             {
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
-            catch
-            {
-                return View();
-            }
+
+            // Eliminar la IA de la base de datos
+            _context.IAs.Remove(iaItem);
+            _context.SaveChanges();
+
+            // Redirigir correctamente a la vista Index con el categoryId
+            return RedirectToAction(nameof(Index), new { categoryId = categoryId });
+
         }
+
+
+
+
+
+
     }
+
 }

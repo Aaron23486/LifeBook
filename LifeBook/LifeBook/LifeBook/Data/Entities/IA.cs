@@ -8,7 +8,7 @@
         public string Url { get; set; }           // URL asociada a la IA
 
         // Relación con la entidad IACategory
-        public int CategoryId { get; set; }
-        public IACategory IACategory { get; set; }
+        public int? CategoryId { get; set; }
+        public IACategory? IACategory { get; set; }
     }
 }

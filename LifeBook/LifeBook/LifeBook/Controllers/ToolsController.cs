@@ -183,18 +183,41 @@ namespace LifeBook.Controllers
             tool.SoId = existingTool.SoId;
             tool.AttackId = existingTool.AttackId;
 
-            // Manejo del archivo si es que se carga uno nuevo
-            if (documentFile != null && documentFile.Length > 0)
+            // Si `documentFile` es null, eliminamos su entrada en el ModelState
+            if (documentFile == null)
             {
-                var fileName = Path.GetFileName(documentFile.FileName);
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/documents", fileName);
+                ModelState.Remove("documentFile");
+            }
 
-                using (var stream = new FileStream(filePath, FileMode.Create))
+            // Validar el archivo cargado solo si `documentFile` no es null
+            if (documentFile != null)
+            {
+                var allowedExtensions = new[] { ".pdf", ".doc", ".docx" };
+                var fileExtension = Path.GetExtension(documentFile.FileName).ToLower();
+
+                if (!allowedExtensions.Contains(fileExtension))
                 {
-                    await documentFile.CopyToAsync(stream);
+                    ModelState.AddModelError("documentFile", "El archivo debe ser un documento válido (.pdf, .doc, .docx).");
                 }
 
-                tool.DocumentPath = $"/documents/{fileName}";
+                if (documentFile.Length > 10 * 1024 * 1024) // 10 MB
+                {
+                    ModelState.AddModelError("documentFile", "El archivo no debe exceder los 10 MB.");
+                }
+
+                if (ModelState.IsValid)
+                {
+                    // Guardar el archivo si pasa las validaciones
+                    var fileName = Path.GetFileName(documentFile.FileName);
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/documents", fileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await documentFile.CopyToAsync(stream);
+                    }
+
+                    tool.DocumentPath = $"/documents/{fileName}";
+                }
             }
             else
             {
@@ -224,8 +247,12 @@ namespace LifeBook.Controllers
                 return RedirectToAction(nameof(Index), new { attackId = tool.AttackId });
             }
 
+            // Mostrar errores del ModelState en la vista si no es válido
             return View(tool);
         }
+
+
+
 
 
 
